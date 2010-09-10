@@ -84,6 +84,7 @@ public class JSEPlatformLayerImpl implements PlatformLayer {
 	}
 
 	public void parse(String command, LobbyCommandListener client) throws ProtocolException {
+		dbg("Receive : " + command);
 		parser.parse(command, client);
 	}
 

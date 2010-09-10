@@ -20,9 +20,10 @@
 package com.springrts.client;
 
 import com.springrts.platform.NetworkLayer;
+import com.springrts.platform.PersistenceLayer;
 import com.springrts.platform.PlatformLayer;
-import com.springrts.protocol.LobbyCommandListener;
 import com.springrts.protocol.ConnectionContext;
+import com.springrts.protocol.LobbyCommandListener;
 import com.springrts.protocol.ProtocolException;
 
 /**
@@ -33,7 +34,6 @@ public abstract class PingClient implements LobbyCommandListener {
 	private class Pinger extends Thread {
 		public synchronized void run() {
 			int pingInterval = remote.getContext().getAvoidTimeoutPingInterval();
-			hardware.dbg("Starting pinger (" + (pingInterval / 1000) + "s)");
 			while ((remote != null) && connected && remote.isRunning()) {
 				try {
 					wait(pingInterval);
@@ -48,7 +48,6 @@ public abstract class PingClient implements LobbyCommandListener {
 					disconnect();
 				}
 			}
-			hardware.dbg("Stoping pinger");
 		}
 
 		public synchronized void stopPinger() {
@@ -58,11 +57,14 @@ public abstract class PingClient implements LobbyCommandListener {
 
 	protected NetworkLayer remote;
 	protected PlatformLayer hardware;
+	protected PersistenceLayer persistence;
+	protected ConnectionContext context;
 	protected boolean tryingToConnect;
 	private boolean connected;
 	private boolean loginFinished;
 	private boolean startPinger;
 	private Pinger pinger;
+	private boolean redirect;
 
 	public PingClient() {
 		super();
@@ -70,44 +72,73 @@ public abstract class PingClient implements LobbyCommandListener {
 		connected = false;
 		startPinger = true;
 		loginFinished = false;
+		redirect = false;
 	}
 
 	public boolean isConnectedAndRunning() {
 		return connected && remote.isRunning();
 	}
 
-	public synchronized void connect(ConnectionContext context) throws ProtocolException {
-		connected = false;
-		tryingToConnect = true;
-		loginFinished = false;
-
-		remote.setCommandListener(this);
-		remote.setContext(context);
-		remote.connect();
-
-		while (tryingToConnect) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-			}
-		}
-
-		if (startPinger && isConnectedAndRunning()) {
-			pinger = new Pinger();
-			pinger.start();
+	public void notifyDisconnected() {
+		if (pinger != null) {
+			pinger.stopPinger();
+			pinger = null;
 		}
 	}
 
-	public synchronized void disconnect() {
+	public void connect() throws ProtocolException {
+		connect(context);
+	}
+	
+	public void connect(ConnectionContext context) throws ProtocolException {
+		if (!connected) {
+			connected = false;
+			tryingToConnect = true;
+			loginFinished = false;
+
+			remote.setCommandListener(this);
+			remote.setContext(context);
+			remote.connectNetwork();
+
+			while (tryingToConnect) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
+			}
+
+			if (startPinger && isConnectedAndRunning()) {
+				pinger = new Pinger();
+				pinger.start();
+			}
+		}
+	}
+
+	public void disconnect() {
 		connected = false;
 
 		if (pinger != null) {
 			pinger.stopPinger();
+			try {
+				pinger.join();
+			} catch (InterruptedException e) {
+			}
 		}
 
 		if (remote != null) {
-			remote.disconnect();
+			remote.disconnectNetwork();
 		}
+
+		if (redirect) {
+			redirect = false;
+
+			try {
+				connect(context);
+			} catch (ProtocolException e) {
+				disconnect();
+			}
+		}
+
 	}
 
 	public boolean isStartPinger() {
@@ -127,7 +158,6 @@ public abstract class PingClient implements LobbyCommandListener {
 	}
 
 	public void pcPong() {
-		hardware.dbg("Pong");
 	}
 
 	public void pcLoginInfoEnd() {
@@ -158,5 +188,16 @@ public abstract class PingClient implements LobbyCommandListener {
 
 	public boolean isLoginFinished() {
 		return loginFinished;
+	}
+
+	public void pcRedirect(String ip) {
+		hardware.log("Redirecting to " + ip);
+		context.setServerIP(ip);
+		tryingToConnect = false;
+		redirect = true;
+	}
+
+	public void setPersistence(PersistenceLayer persistence) {
+		this.persistence = persistence;
 	}
 }

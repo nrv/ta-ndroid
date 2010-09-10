@@ -19,11 +19,13 @@
 
 package com.springrts.protocol;
 
+import com.springrts.client.Client;
+
 /**
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
-public interface LobbyCommandListener {
+public interface LobbyCommandListener extends Client {
 	void notifyConnected();
 	void notifyDisconnected();
 	void pcTasServer(String serverVersion, String springVersion, String udpPort, String serverMode);
@@ -43,4 +45,8 @@ public interface LobbyCommandListener {
 	void pcBattleOpened(String battleId, String type, String natType, String founder, String ip, String port, String maxPlayers, String passworded, String rank, String mapHash, String mapName, String title, String modName);
 	void pcUpdateBattleInfo(String battleId, String spectatorCount, String locked, String mapHash, String mapName);
 	void pcJoinedBattle(String battleId, String username, String scriptPassword);
+	void pcBroadcast(String msg);
+	void pcServerMessage(String msg);
+	void pcServerMessageBox(String msg);
+	void pcRedirect(String ip);
 }

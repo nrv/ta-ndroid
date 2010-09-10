@@ -29,8 +29,8 @@ import com.springrts.protocol.ProtocolException;
  */
 public interface NetworkLayer {
 	public void confirmAgreement() throws ProtocolException;
-	public void connect() throws ProtocolException;
-	public void disconnect();
+	public void connectNetwork() throws ProtocolException;
+	public void disconnectNetwork();
 	public LobbyCommandListener getCommandListener();
 	public ConnectionContext getContext();
 	public boolean isRunning();

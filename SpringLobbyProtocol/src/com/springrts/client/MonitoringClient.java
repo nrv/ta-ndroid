@@ -20,18 +20,24 @@
 package com.springrts.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.springrts.data.SpringAccount;
 import com.springrts.data.SpringAccountList;
+import com.springrts.protocol.ProtocolException;
 
 /**
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
-public class MonitoringClient extends RegisteringClient {
+public class MonitoringClient extends PingClient {
 	private SpringAccountList connectedPlayers;
 	private SpringAccountList friends;
+	private Map<String, Pattern> usernamePatterns;
 	private int nbFriendsOnline;
 	private MonitoringApplication application;
 
@@ -40,9 +46,16 @@ public class MonitoringClient extends RegisteringClient {
 
 		connectedPlayers = new SpringAccountList();
 		friends = new SpringAccountList();
+		usernamePatterns = new HashMap<String, Pattern>();
 		nbFriendsOnline = 0;
 
 		this.application = application;
+	}
+	
+	public void loadParameters() throws ProtocolException {
+		friends = persistence.loadFriends();
+		context = persistence.loadConnectionContext();
+		usernamePatterns = persistence.loadUsernamePatterns();
 	}
 
 	public void addFriend(String username) {
@@ -52,6 +65,25 @@ public class MonitoringClient extends RegisteringClient {
 		if (connectedPlayers.contains(username)) {
 			friendOnline(username);
 		}
+		
+		try {
+			persistence.saveFriends(friends);
+		} catch (ProtocolException e) {
+			hardware.err(e);
+		}
+	}
+	
+	public void addClan(String c) {
+		addUsernamePattern("\\["+ c +"\\].*");
+	}
+	
+	public void addUsernamePattern(String p) {
+		Pattern pt = Pattern.compile(p, Pattern.CASE_INSENSITIVE);
+		usernamePatterns.put(p, pt);
+	}
+	
+	public void removeUsernamePattern(String p) {
+		usernamePatterns.remove(p);
 	}
 
 	private void friendOffline(String username) {
@@ -105,7 +137,9 @@ public class MonitoringClient extends RegisteringClient {
 		application.notifyConnected();
 	}
 	
-	public synchronized void notifyDisconnected() {
+	public void notifyDisconnected() {
+		super.notifyDisconnected();
+		
 		application.notifyDisconnected();
 		
 		for (SpringAccount act : friends) {
@@ -124,10 +158,17 @@ public class MonitoringClient extends RegisteringClient {
 
 	public void pcAddUser(String username, String country, String cpu, String accountId) {
 		username = username.trim().toUpperCase();
-		hardware.dbg("pcAddUser " + username);
 		synchronized (connectedPlayers) {
 			connectedPlayers.put(new SpringAccount(username));
-			if (friends.contains(username)) {
+			if (!friends.contains(username)) {
+				for (Pattern p : usernamePatterns.values()) {
+					Matcher m = p.matcher(username);
+					if (m.matches()) {
+						addFriend(username);
+						break;
+					}
+				}
+			} else {
 				friendOnline(username);
 			}
 		}
@@ -171,7 +212,6 @@ public class MonitoringClient extends RegisteringClient {
 
 	public void pcRemoveUser(String username) {
 		username = username.trim().toUpperCase();
-		hardware.dbg("pcRemoveUser " + username);
 		synchronized (connectedPlayers) {
 			connectedPlayers.remove(username);
 			if (friends.contains(username)) {
@@ -190,6 +230,44 @@ public class MonitoringClient extends RegisteringClient {
 			friendOffline(username);
 		}
 		friends.remove(username);
+		
+		try {
+			persistence.saveFriends(friends);
+		} catch (ProtocolException e) {
+			hardware.err(e);
+		}
+	}
+
+	public void pcBroadcast(String msg) {
+		hardware.log(msg);
+	}
+
+	public void pcServerMessage(String msg) {
+		hardware.log(msg);
+	}
+
+	public void pcServerMessageBox(String msg) {
+		hardware.log(msg);
+	}
+
+	public void pcRegistrationAccepted() {
+		// Ignore
+	}
+
+	public void pcRegistrationDenied(String reason) {
+		// Ignore
+	}
+
+	public void pcAgreementEnd() {
+		// Ignore
+	}
+
+	public Map<String, Pattern> getUsernamePatterns() {
+		return usernamePatterns;
+	}
+
+	public void setUsernamePatterns(Map<String, Pattern> usernamePatterns) {
+		this.usernamePatterns = usernamePatterns;
 	}
 
 }

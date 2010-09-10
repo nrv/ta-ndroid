@@ -116,6 +116,14 @@ public class CommandParser {
 			client.pcUpdateBattleInfo(c[1], c[2], c[3], c[4], c[5]);
 		} else if (c0.equals("JOINEDBATTLE")) {
 			client.pcJoinedBattle(c[1], c[2], c[3]);
+		} else if (c0.equals("BROADCAST")) {
+			client.pcBroadcast(cxx);
+		} else if (c0.equals("SERVERMSGBOX")) {
+			client.pcServerMessageBox(cxx);
+		} else if (c0.equals("SERVERMSG")) {
+			client.pcServerMessage(cxx);
+		} else if (c0.equals("REDIRECT")) {
+			client.pcRedirect(c[1]);
 		} else {
 			client.pcNotImplemented(command);
 		}

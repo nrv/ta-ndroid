@@ -32,13 +32,13 @@ public class SpringAccount {
 	public SpringAccount() {
 		super();
 		currentlyOnline = false;
+		this.lastTimeSeen = -1;
+		this.internalId = -1;
 	}
 	
 	public SpringAccount(String username) {
 		this();
 		this.username = username;
-		this.lastTimeSeen = -1;
-		this.internalId = -1;
 	}
 	
 	public int getInternalId() {

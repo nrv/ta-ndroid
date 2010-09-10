@@ -38,23 +38,22 @@ public class ConnectionContext {
 	private int serverPort;
 	private int avoidTimeoutPingInterval;
 	private String login;
-	private String password;
 	private String encodedPassword;
 	private String charset;
 	private String lobbyNameAndVersion;
 
 	public static ConnectionContext defaultContext() {
 		ConnectionContext dc = new ConnectionContext();
-		dc.setServerIP(DEFAULT_SERVER_ADDRESS);
-		dc.setServerPort(DEFAULT_SERVER_PORT);
-		dc.setAvoidTimeoutPingInterval(DEFAULT_PING_INTERVAL);
-		dc.setCharset(DEFAULT_CHARSET);
-		dc.setLobbyNameAndVersion(LOBBYNAME + " " + LOBBYVERSION);
 		return dc;
 	}
 
 	public ConnectionContext() {
 		super();
+		setServerIP(DEFAULT_SERVER_ADDRESS);
+		setServerPort(DEFAULT_SERVER_PORT);
+		setAvoidTimeoutPingInterval(DEFAULT_PING_INTERVAL);
+		setCharset(DEFAULT_CHARSET);
+		setLobbyNameAndVersion(LOBBYNAME + " " + LOBBYVERSION);
 	}
 
 	public String getServerIP() {
@@ -87,14 +86,6 @@ public class ConnectionContext {
 
 	public void setLogin(String login) {
 		this.login = login;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getEncodedPassword() {

@@ -23,6 +23,7 @@ import com.springrts.client.MonitoringApplication;
 import com.springrts.client.MonitoringClient;
 import com.springrts.data.SpringAccount;
 import com.springrts.platform.jse.JSENetworkLayerImpl;
+import com.springrts.platform.jse.JSEPersistenceLayerImpl;
 import com.springrts.platform.jse.JSEPlatformLayerImpl;
 import com.springrts.protocol.ConnectionContext;
 import com.springrts.protocol.tools.PasswordEncoder;
@@ -41,38 +42,38 @@ public class JSETestClient implements MonitoringApplication {
 	public void launch(String login, String password) {
 		client = new MonitoringClient(this);
 		
-		client.addFriend("[FLM]Nrv");
-		client.addFriend("[FLM]Stef");
-		client.addFriend("[FLM]daftalx");
-		client.addFriend("[FLM]Marciolino");
-		client.addFriend("[FLM]ZZZzzz");
-		client.addFriend("[FLM]Faboz");
-		client.addFriend("[FLM]Scorplex");
-		client.addFriend("[FLM]got_thx");
-		client.addFriend("[FLM]NoFX");
-		client.addFriend("[FLM]7777");
-		client.addFriend("[FLM]Krogoth");
-		client.addFriend("[FLM]mOonst4r");
-
+		
+		
 		JSEPlatformLayerImpl hdw = new JSEPlatformLayerImpl();
-		hdw.setDebug(false);
+		hdw.setDebug(true);
 
 		JSENetworkLayerImpl nwk = new JSENetworkLayerImpl(hdw);
 		client.setHardware(hdw);
 		client.setRemote(nwk);
+		
+		JSEPersistenceLayerImpl pers = new JSEPersistenceLayerImpl(hdw);
+		client.setPersistence(pers);
 
-		client.setRegisterIfFirstLoginFailed(false);
 		client.setStartPinger(true);
 
 		try {
 			ConnectionContext context = ConnectionContext.defaultContext();
-			context.setServerIP(ConnectionContext.OFFICIAL_SERVER_ADDRESS);
+			context.setServerIP(ConnectionContext.LOCAL_SERVER_ADDRESS);
 			context.setLogin(login);
-			context.setPassword(password);
 			PasswordEncoder pwdenc = new PasswordEncoder();
 			context.setEncodedPassword(pwdenc.encodePassword(password, context.getCharset()));
-
-			client.connect(context);
+			pers.saveConnectionContext(context);
+			
+			client.addClan("FLM");
+			pers.saveUsernamePatterns(client.getUsernamePatterns());
+			
+			try {
+				client.loadParameters();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
+			client.connect();
 
 			while (client.isConnectedAndRunning()) {
 				try {
@@ -83,6 +84,7 @@ public class JSETestClient implements MonitoringApplication {
 
 		} catch (Exception e) {
 			System.err.println("JSETestClient catched an exception : " + e.getMessage());
+			e.printStackTrace();
 		} finally {
 			client.disconnect();
 			client = null;
@@ -90,7 +92,7 @@ public class JSETestClient implements MonitoringApplication {
 	}
 
 	public void notifyFriendsOnlineChanged() {
-		if (client.isLoginFinished()) {
+		if ((client != null) && client.isLoginFinished()) {
 			System.out.println("You have now " + client.getNbFriendsOnline() + " friends online :");
 			for (SpringAccount act : client.getActiveFriendsSince(15)) {
 				System.out.println("  - " + act.shortDisplay());

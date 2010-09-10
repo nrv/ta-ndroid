@@ -38,33 +38,32 @@ public class JSENetworkLayerImpl extends CommonNetworkLayer {
 		socket = null;
 	}
 
-	public synchronized void connect() throws ProtocolException {
+	public void connectNetwork() throws ProtocolException {
 		try {
 			socket = new Socket(context.getServerIP(), context.getServerPort());
 			is = socket.getInputStream();
 			os = socket.getOutputStream();
-			
-			client.notifyConnected();
-			
-			startSenderAndReceiver();
 
+			client.notifyConnected();
+
+			startSenderAndReceiver();
 		} catch (IOException e) {
 			throw new ProtocolException(e);
 		}
 	}
 
-	public synchronized void disconnect() {
+	public void disconnectNetwork() {
 		stopSenderAndReceiver();
-		
+
 		if (socket != null) {
 			try {
 				socket.close();
 			} catch (IOException e) {
 			}
 			socket = null;
+			is = null;
+			os = null;
 			client.notifyDisconnected();
 		}
-
-		
 	}
 }

@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.springrts.protocol.LobbyCommandListener;
 import com.springrts.protocol.ConnectionContext;
+import com.springrts.protocol.LobbyCommandListener;
 import com.springrts.protocol.ProtocolException;
 
 /**
@@ -56,9 +56,13 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 	private class Sender extends Thread {
 		private String message;
 
+		public Sender() {
+			super();
+			message = null;
+		}
+
 		public synchronized void run() {
 			hardware.threadCreationSpecificStuff();
-			hardware.dbg("Starting sender");
 			while (running) {
 				if (message == null) {
 					try {
@@ -71,14 +75,13 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 							os.write(EOL);
 						} catch (IOException e) {
 							hardware.err(e);
-							disconnect();
+							client.disconnect();
 						}
 					}
 
 					message = null;
 				}
 			}
-			hardware.dbg("Stoping sender");
 		}
 
 		public synchronized void send(String msg) {
@@ -90,7 +93,6 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 	private class Receiver extends Thread {
 		public synchronized void run() {
 			hardware.threadCreationSpecificStuff();
-			hardware.dbg("Starting receiver");
 			while (running) {
 				try {
 					StringBuffer sb = new StringBuffer();
@@ -101,22 +103,21 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 					}
 
 					if (c == -1) {
-						disconnect();
+						client.disconnect();
+					} else {
+						hardware.parse(sb.toString(), client);
 					}
-
-					hardware.parse(sb.toString(), client);
 				} catch (IOException e) {
 					hardware.err(e);
-					disconnect();
+					client.disconnect();
 				} catch (ProtocolException e) {
 					hardware.err(e);
-					disconnect();
+					client.disconnect();
 				} catch (NullPointerException e) {
 					hardware.err(e);
-					disconnect();
+					client.disconnect();
 				}
 			}
-			hardware.dbg("Stoping receiver");
 		}
 
 	}
@@ -130,13 +131,28 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 		receiver.start();
 	}
 
-	protected synchronized void stopSenderAndReceiver() {
+	protected void stopSenderAndReceiver() {
 		running = false;
 
 		if (sender != null) {
 			sender.send(null);
 		}
 
+		if (sender != null) {
+			try {
+				sender.join();
+			} catch (InterruptedException e) {
+			}
+		}
+		
+		if (receiver != null) {
+			try {
+				receiver.interrupt();
+				receiver.join();
+			} catch (InterruptedException e) {
+			}
+		}
+		
 		if (is != null) {
 			try {
 				is.close();
@@ -158,13 +174,14 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 	}
 
 	protected void send(String msg) throws ProtocolException {
+		hardware.dbg("Sending : " + msg);
 		sender.send(msg);
 	}
 
 	public void login() throws ProtocolException {
 		send("LOGIN " + context.getLogin() + " " + context.getEncodedPassword() + " 0 * " + context.getLobbyNameAndVersion());
 	}
-	
+
 	public void ping() throws ProtocolException {
 		send("PING");
 	}

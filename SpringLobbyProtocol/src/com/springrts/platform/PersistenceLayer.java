@@ -19,6 +19,9 @@
 
 package com.springrts.platform;
 
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import com.springrts.data.SpringAccountList;
 import com.springrts.protocol.ConnectionContext;
 import com.springrts.protocol.ProtocolException;
@@ -32,4 +35,6 @@ public interface PersistenceLayer {
 	void saveFriends(SpringAccountList lst)  throws ProtocolException;
 	ConnectionContext loadConnectionContext() throws ProtocolException;
 	void saveConnectionContext(ConnectionContext ctx)  throws ProtocolException;
+	Map<String, Pattern> loadUsernamePatterns() throws ProtocolException;
+	void saveUsernamePatterns(Map<String, Pattern> p)  throws ProtocolException;
 }

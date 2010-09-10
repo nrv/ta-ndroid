@@ -69,7 +69,6 @@ public abstract class RegisteringClient extends PingClient {
 	}
 
 	public void pcAgreementEnd() {
-		hardware.dbg("pcAgreementEnd");
 		try {
 			remote.confirmAgreement();
 			try {
