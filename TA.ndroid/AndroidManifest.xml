@@ -26,7 +26,7 @@
 	android:versionName="1.0.0">
 	<application android:icon="@drawable/icon" android:label="@string/app_name" android:name="TAndroid">
 
-		<activity android:name=".ui.FriendsList">
+		<activity android:name=".ui.Main">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"></action>
 				<category android:name="android.intent.category.LAUNCHER"></category>
@@ -34,6 +34,7 @@
 		</activity>
 
 	<activity android:name=".ui.Options"></activity>
+	<activity android:name=".ui.ManageFriends"></activity>
 	<service android:name=".service.LobbyService"></service>
 </application>
 

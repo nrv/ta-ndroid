@@ -50,7 +50,7 @@ import com.springrts.tandroid.service.LobbyService;
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
-public class FriendsList extends ListActivity implements LogLayer {
+public class Main extends ListActivity implements LogLayer {
 	public static final String HANDLER_ACTION = "a";
 	public static final String HANDLER_INFO = "i";
 
@@ -141,9 +141,9 @@ public class FriendsList extends ListActivity implements LogLayer {
 		}
 
 		class MyHandler extends Handler {
-			private FriendsList fl;
+			private Main fl;
 
-			public MyHandler(FriendsList fl) {
+			public MyHandler(Main fl) {
 				super();
 				this.fl = fl;
 			}
@@ -267,7 +267,7 @@ public class FriendsList extends ListActivity implements LogLayer {
 		// refreshUI();
 	}
 
-	private void setStatus(int msg, String info) {
+	public void setStatus(int msg, String info) {
 		TextView status = (TextView) findViewById(R.id.status);
 		String st = getResources().getText(R.string.status) + " " + getResources().getText(msg);
 		if (info != null) {
@@ -289,7 +289,7 @@ public class FriendsList extends ListActivity implements LogLayer {
 	protected void onPause() {
 		super.onPause();
 		dbg("FriendsList.onPause()");
-		getTAndroid().setFriendsListDisplayed(null);
+		getTAndroid().unsetFriendsListDisplayed();
 	}
 
 	@Override
@@ -302,7 +302,7 @@ public class FriendsList extends ListActivity implements LogLayer {
 	protected void onResume() {
 		super.onResume();
 		dbg("FriendsList.onResume()");
-		getTAndroid().unsetFriendsListDisplayed();
+		getTAndroid().setFriendsListDisplayed(this);
 	}
 
 	private TAndroid getTAndroid() {

@@ -33,7 +33,7 @@ import com.springrts.protocol.LobbyCommandListener;
 import com.springrts.protocol.ProtocolException;
 import com.springrts.protocol.tools.CommandParser;
 import com.springrts.protocol.tools.PasswordEncoder;
-import com.springrts.tandroid.ui.FriendsList;
+import com.springrts.tandroid.ui.Main;
 
 /**
  * @author NRV - nherve75@gmail.com
@@ -50,17 +50,18 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 	public static final int HANDLER_NOTIFY_DENIED = 6;
 	public static final int HANDLER_NOTIFY_FRIEND_CONNECTED = 7;
 	public static final int HANDLER_NOTIFY_FRIEND_DISCONNECTED = 8;
+	
+	private static final boolean DEBUG_LEVEL_ENABLED = true;
+	private static final boolean LOG_LEVEL_ENABLED = true;
 
-	private FriendsList friendsListDisplayed = null;
-	private boolean debug = true;
-	private boolean log = true;
+	private Main friendsListDisplayed = null;
 	private CommandParser parser;
 
 	public static final String PREFS = "com.springrts.tandroid.TA.ndroid";
 
 	@Override
 	public void dbg(String msg) {
-		if (debug) {
+		if (DEBUG_LEVEL_ENABLED) {
 			Log.d(LOG_TAG, msg);
 		}
 	}
@@ -85,19 +86,20 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 	@Override
 	public void err(Throwable e) {
 		Log.e(LOG_TAG, e.getMessage(), e);
-		if (debug) {
+		if (DEBUG_LEVEL_ENABLED) {
 			e.printStackTrace();
 		}
 	}
 
-	public FriendsList getFriendsListDisplayed() {
+	public Main getFriendsListDisplayed() {
 		return friendsListDisplayed;
 	}
 
 	@Override
 	public void log(String msg) {
-		if (log)
+		if (LOG_LEVEL_ENABLED) {
 			Log.i(LOG_TAG, msg);
+		}
 	}
 
 	@Override
@@ -177,12 +179,13 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 
 	private void sendMessageToFriendsListUI(int action, String info) {
 		if (friendsListDisplayed != null) {
-			log("sendMessageToMainThread(" + action + ") " + info);
 			friendsListDisplayed.sendMessageToMainThread(action, info);
+		} else {
+			log("aborted sendMessageToMainThread(" + action + ") " + info);
 		}
 	}
 
-	public void setFriendsListDisplayed(FriendsList fld) {
+	public void setFriendsListDisplayed(Main fld) {
 		friendsListDisplayed = fld;
 	}
 
