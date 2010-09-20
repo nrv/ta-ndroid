@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2010 NRV - nherve75@gmail.com
+ * 
+ * This file is part of TA.ndroid.
+ * 
+ * TA.ndroid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ * 
+ * TA.ndroid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with TA.ndroid. If not, see http://www.gnu.org/licenses/
+ * 
+ */
+-->
+<resources>
+	<string name="app_name">TA.ndroid</string>
+	<string name="empty_list"></string>
+	<string name="login">Login</string>
+	<string name="logout">Logout</string>
+	<string name="refresh">Refresh</string>
+	<string name="exit">Exit</string>
+	<string name="status">Status : </string>
+	<string name="st_offline">offline</string>
+	<string name="st_online">online</string>
+	<string name="st_login">fetching data</string>
+	<string name="st_connected">connected</string>
+	<string name="st_denied">access denied</string>
+	<string name="fr_connected">is connecting</string>
+	<string name="fr_disconnected">is disconnecting</string>
+	<string name="options">Options</string>
+    <string name="friends">Manage contacts</string>
+    <string name="min">m</string>
+	<string name="hour">h</string>
+	<string name="day">j</string>
+	<string name="options_about">About</string>
+	<string name="options_about_cnx">Lobby connection</string>
+	<string name="options_about_cnx_login">login</string>
+	<string name="options_about_cnx_password">password</string>
+	<string name="options_about_cnx_server">server</string>
+	<string name="options_about_cnx_default_server">taspringmaster.clan-sy.com</string>
+	<string name="options_about_cnx_server_port">port</string>
+	<string name="options_about_cnx_default_server_port">8200</string>
+	<string name="options_about_desc">About TA.ndroid</string>
+	<string name="options_about_info">&lt;b>Version:&lt;/b> %s&lt;br>&lt;b></string>
+	<string name="copyright">© 2010 NRV</string>
+	<string name="close">OK</string>
+</resources>

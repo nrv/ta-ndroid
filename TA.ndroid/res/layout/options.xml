@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2010 NRV - nherve75@gmail.com
+ * 
+ * This file is part of TA.ndroid.
+ * 
+ * TA.ndroid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ * 
+ * TA.ndroid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with TA.ndroid. If not, see http://www.gnu.org/licenses/
+ * 
+ */
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:title="@string/options_about">
+		<Preference android:enabled="true" android:key="about" android:title="@string/options_about"
+			android:summary="@string/options_about_desc" android:selectable="true" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/options_about_cnx">
+		<EditTextPreference android:enabled="true" android:key="cnx_login" android:title="@string/options_about_cnx_login"
+			android:persistent="true" android:defaultValue=""/>
+		<EditTextPreference android:enabled="true" android:key="cnx_password" android:title="@string/options_about_cnx_password"
+			android:password="true" android:persistent="true" android:defaultValue=""/>
+		<EditTextPreference android:enabled="true" android:key="cnx_server" android:title="@string/options_about_cnx_server"
+			android:persistent="true" android:defaultValue="@string/options_about_cnx_default_server"/>
+		<EditTextPreference android:enabled="true" android:key="cnx_server_port" android:title="@string/options_about_cnx_server_port"
+			android:persistent="true" android:defaultValue="@string/options_about_cnx_default_server_port"/>
+	</PreferenceCategory>
+</PreferenceScreen>

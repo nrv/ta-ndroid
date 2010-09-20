@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2010 NRV - nherve75@gmail.com
+ * 
+ * This file is part of TA.ndroid.
+ * 
+ * TA.ndroid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ * 
+ * TA.ndroid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with TA.ndroid. If not, see http://www.gnu.org/licenses/
+ * 
+ */
+-->
+<resources>
+	<string name="app_name">TA.ndroid</string>
+	<string name="empty_list"></string>
+	<string name="login">Connexion</string>
+	<string name="logout">Déconnexion</string>
+	<string name="refresh">Rafraîchir</string>
+	<string name="exit">Sortie</string>
+	<string name="status">Status : </string>
+	<string name="st_offline">déconnecté</string>
+	<string name="st_online">en ligne</string>
+	<string name="st_login">récupération des informations</string>
+	<string name="st_connected">connecté</string>
+	<string name="st_denied">accès refusé</string>
+	<string name="fr_connected">vient de se connecter</string>
+	<string name="fr_disconnected">vient de se déconnecter</string>
+	<string name="options">Options</string>
+	<string name="friends">Gestion des contacts</string>
+	<string name="min">m</string>
+	<string name="hour">h</string>
+	<string name="day">j</string>
+</resources>
