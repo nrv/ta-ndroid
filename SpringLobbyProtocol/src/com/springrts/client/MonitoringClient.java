@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import com.springrts.data.SpringAccount;
 import com.springrts.data.SpringAccountList;
+import com.springrts.protocol.ConnectionContext;
 import com.springrts.protocol.ProtocolException;
 
 /**
@@ -52,10 +53,85 @@ public class MonitoringClient extends PingClient {
 		this.application = application;
 	}
 	
-	public void loadParameters() throws ProtocolException {
+	public void loadFriends() throws ProtocolException {
 		friends = persistence.loadFriends();
-		context = persistence.loadConnectionContext();
+	}
+		
+	public void loadConnectionContext() throws ProtocolException {
+		remote.setContext(persistence.loadConnectionContext());
+		
+	}
+			
+	public void loadUsernamePatterns() throws ProtocolException {
 		usernamePatterns = persistence.loadUsernamePatterns();
+	}
+
+	public void loadParameters() throws ProtocolException {
+		List<ProtocolException> e = new ArrayList<ProtocolException>();
+		try {
+			loadFriends();
+		} catch (ProtocolException e1) {
+			e.add(e1);
+		}
+		try {
+			loadConnectionContext();
+		} catch (ProtocolException e1) {
+			e.add(e1);
+		}
+		try {
+			loadUsernamePatterns();
+		} catch (ProtocolException e1) {
+			e.add(e1);
+		}
+		if (e.size() > 0) {
+			String msg = "";
+			for (ProtocolException e1 : e) {
+				msg += e1.getMessage() + " | ";
+			}
+			throw new ProtocolException(msg);
+		}
+	}
+	
+	public void saveFriends() throws ProtocolException {
+		persistence.saveFriends(friends);
+	}
+	
+	public void saveConnectionContext() throws ProtocolException {
+		saveConnectionContext(remote.getContext());
+	}
+	
+	public void saveConnectionContext(ConnectionContext c) throws ProtocolException {
+		persistence.saveConnectionContext(c);
+	}
+	
+	public void saveUsernamePatterns() throws ProtocolException {
+		persistence.saveUsernamePatterns(usernamePatterns);
+	}
+	
+	public void saveParameters() throws ProtocolException {
+		List<ProtocolException> e = new ArrayList<ProtocolException>();
+		try {
+			saveFriends();
+		} catch (ProtocolException e1) {
+			e.add(e1);
+		}
+		try {
+			saveConnectionContext();
+		} catch (ProtocolException e1) {
+			e.add(e1);
+		}
+		try {
+			saveUsernamePatterns();
+		} catch (ProtocolException e1) {
+			e.add(e1);
+		}
+		if (e.size() > 0) {
+			String msg = "";
+			for (ProtocolException e1 : e) {
+				msg += e1.getMessage() + " | ";
+			}
+			throw new ProtocolException(msg);
+		}
 	}
 
 	public void addFriend(String username) {
@@ -65,23 +141,23 @@ public class MonitoringClient extends PingClient {
 		if (connectedPlayers.contains(username)) {
 			friendOnline(username);
 		}
-		
+
 		try {
-			persistence.saveFriends(friends);
+			saveFriends();
 		} catch (ProtocolException e) {
 			hardware.err(e);
 		}
 	}
-	
+
 	public void addClan(String c) {
-		addUsernamePattern("\\["+ c +"\\].*");
+		addUsernamePattern("\\[" + c + "\\].*");
 	}
-	
+
 	public void addUsernamePattern(String p) {
 		Pattern pt = Pattern.compile(p, Pattern.CASE_INSENSITIVE);
 		usernamePatterns.put(p, pt);
 	}
-	
+
 	public void removeUsernamePattern(String p) {
 		usernamePatterns.remove(p);
 	}
@@ -136,12 +212,12 @@ public class MonitoringClient extends PingClient {
 	public void notifyConnected() {
 		application.notifyConnected();
 	}
-	
+
 	public void notifyDisconnected() {
 		super.notifyDisconnected();
-		
+
 		application.notifyDisconnected();
-		
+
 		for (SpringAccount act : friends) {
 			if (act.isCurrentlyOnline()) {
 				act.setCurrentlyOnline(false);
@@ -230,9 +306,9 @@ public class MonitoringClient extends PingClient {
 			friendOffline(username);
 		}
 		friends.remove(username);
-		
+
 		try {
-			persistence.saveFriends(friends);
+			saveFriends();
 		} catch (ProtocolException e) {
 			hardware.err(e);
 		}

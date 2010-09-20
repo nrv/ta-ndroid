@@ -19,16 +19,13 @@
 
 package com.springrts.platform;
 
-import com.springrts.protocol.LobbyCommandListener;
-import com.springrts.protocol.ProtocolException;
-
 /**
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
-public interface PlatformLayer extends LogLayer {
-	String encodePassword(String plainPassword, String preferredEncoding) throws ProtocolException;
-	int split(String line, String[] commands);
-	void parse(String command, LobbyCommandListener client) throws ProtocolException;
-	void threadCreationSpecificStuff();
+public interface LogLayer {
+	void dbg(String msg);
+	void log(String msg);
+	void err(String msg);
+	void err(Throwable e);
 }

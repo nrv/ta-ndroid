@@ -29,7 +29,7 @@ public class ConnectionContext {
 	public final static String LOCAL_SERVER_ADDRESS = "localhost";
 	public final static String OFFICIAL_SERVER_ADDRESS = "taspringmaster.clan-sy.com";
 	public final static String TEST_SERVER_ADDRESS = "springlobby.info";
-	public final static String DEFAULT_SERVER_ADDRESS = LOCAL_SERVER_ADDRESS;
+	public final static String DEFAULT_SERVER_ADDRESS = OFFICIAL_SERVER_ADDRESS;
 	public final static int DEFAULT_SERVER_PORT = 8200;
 	public final static int DEFAULT_PING_INTERVAL = 15000;
 	public final static String DEFAULT_CHARSET = "ISO-8859-1";

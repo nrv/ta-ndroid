@@ -105,7 +105,9 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 					if (c == -1) {
 						client.disconnect();
 					} else {
-						hardware.parse(sb.toString(), client);
+						String s = sb.toString();
+						hardware.dbg("Receiving : " + s);
+						hardware.parse(s, client);
 					}
 				} catch (IOException e) {
 					hardware.err(e);

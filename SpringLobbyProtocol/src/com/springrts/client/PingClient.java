@@ -33,7 +33,7 @@ import com.springrts.protocol.ProtocolException;
 public abstract class PingClient implements LobbyCommandListener {
 	private class Pinger extends Thread {
 		public synchronized void run() {
-			int pingInterval = remote.getContext().getAvoidTimeoutPingInterval();
+			int pingInterval = getContext().getAvoidTimeoutPingInterval();
 			while ((remote != null) && connected && remote.isRunning()) {
 				try {
 					wait(pingInterval);
@@ -58,13 +58,13 @@ public abstract class PingClient implements LobbyCommandListener {
 	protected NetworkLayer remote;
 	protected PlatformLayer hardware;
 	protected PersistenceLayer persistence;
-	protected ConnectionContext context;
+//	protected ConnectionContext context;
 	protected boolean tryingToConnect;
 	private boolean connected;
 	private boolean loginFinished;
 	private boolean startPinger;
 	private Pinger pinger;
-	private boolean redirect;
+//	private boolean redirect;
 
 	public PingClient() {
 		super();
@@ -72,7 +72,7 @@ public abstract class PingClient implements LobbyCommandListener {
 		connected = false;
 		startPinger = true;
 		loginFinished = false;
-		redirect = false;
+//		redirect = false;
 	}
 
 	public boolean isConnectedAndRunning() {
@@ -87,17 +87,12 @@ public abstract class PingClient implements LobbyCommandListener {
 	}
 
 	public void connect() throws ProtocolException {
-		connect(context);
-	}
-	
-	public void connect(ConnectionContext context) throws ProtocolException {
 		if (!connected) {
 			connected = false;
 			tryingToConnect = true;
 			loginFinished = false;
 
 			remote.setCommandListener(this);
-			remote.setContext(context);
 			remote.connectNetwork();
 
 			while (tryingToConnect) {
@@ -129,15 +124,15 @@ public abstract class PingClient implements LobbyCommandListener {
 			remote.disconnectNetwork();
 		}
 
-		if (redirect) {
-			redirect = false;
-
-			try {
-				connect(context);
-			} catch (ProtocolException e) {
-				disconnect();
-			}
-		}
+//		if (redirect) {
+//			redirect = false;
+//
+//			try {
+//				connect(context);
+//			} catch (ProtocolException e) {
+//				disconnect();
+//			}
+//		}
 
 	}
 
@@ -192,12 +187,16 @@ public abstract class PingClient implements LobbyCommandListener {
 
 	public void pcRedirect(String ip) {
 		hardware.log("Redirecting to " + ip);
-		context.setServerIP(ip);
+//		getContext().setServerIP(ip);
 		tryingToConnect = false;
-		redirect = true;
+//		redirect = true;
 	}
 
 	public void setPersistence(PersistenceLayer persistence) {
 		this.persistence = persistence;
+	}
+
+	public ConnectionContext getContext() {
+		return remote.getContext();
 	}
 }
