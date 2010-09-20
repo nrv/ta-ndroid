@@ -58,7 +58,7 @@ public class JSETestClient implements MonitoringApplication {
 
 		try {
 			ConnectionContext context = ConnectionContext.defaultContext();
-			context.setServerIP(ConnectionContext.LOCAL_SERVER_ADDRESS);
+			context.setServerIP(ConnectionContext.OFFICIAL_SERVER_ADDRESS);
 			context.setLogin(login);
 			PasswordEncoder pwdenc = new PasswordEncoder();
 			context.setEncodedPassword(pwdenc.encodePassword(password, context.getCharset()));
@@ -70,7 +70,7 @@ public class JSETestClient implements MonitoringApplication {
 			try {
 				client.loadParameters();
 			} catch (Exception e1) {
-				e1.printStackTrace();
+				System.err.println("JSETestClient catched an exception : " + e1.getMessage());
 			}
 			
 			client.connect();
