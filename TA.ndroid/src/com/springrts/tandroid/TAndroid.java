@@ -161,15 +161,7 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		dbg("TAndroid.onCreate()");
-
 		parser = new CommandParser(this);
-	}
-
-	@Override
-	public void onTerminate() {
-		super.onTerminate();
-		dbg("TAndroid.onTerminate()");
 	}
 
 	@Override

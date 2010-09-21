@@ -19,16 +19,13 @@
 
 package com.springrts.tandroid.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ListActivity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.springrts.data.SpringAccount;
-import com.springrts.platform.LogLayer;
 import com.springrts.tandroid.R;
 import com.springrts.tandroid.TAndroid;
 import com.springrts.tandroid.service.LobbyService;
@@ -50,23 +46,12 @@ import com.springrts.tandroid.service.LobbyService;
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
-public class Main extends ListActivity implements LogLayer {
+public class Main extends TAndroidListActivity {
 	public static final String HANDLER_ACTION = "a";
 	public static final String HANDLER_INFO = "i";
 
 	private Handler handler;
 	private UIRefresher refresher;
-
-	private LobbyService lobby = null;
-	private ServiceConnection serviceConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			lobby = ((LobbyService.LocalBinder) service).getService();
-		}
-
-		public void onServiceDisconnected(ComponentName className) {
-			lobby = null;
-		}
-	};
 
 	private class UIRefresher extends Thread {
 		public UIRefresher() {
@@ -103,16 +88,17 @@ public class Main extends ListActivity implements LogLayer {
 			refresher.stopRefresher();
 			refresher = null;
 		}
+		
+		stopService(new Intent(this, LobbyService.class));
+		
 		finish();
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		bindService(new Intent(this, LobbyService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-
-		dbg("FriendsList.onCreate()");
+		
+		startService(new Intent(this, LobbyService.class));
 
 		refresher = null;
 
@@ -158,14 +144,14 @@ public class Main extends ListActivity implements LogLayer {
 
 				switch (action) {
 				case TAndroid.HANDLER_REFRESH_UI:
-//					log("You have now " + client.getNbFriendsOnline() + " friends online :");
-//					List<SpringAccount> aa = new ArrayList<SpringAccount>();
-//					for (SpringAccount act : client.getActiveFriendsSince(15)) {
-//						aa.add(act);
-//						log("  - " + act.shortDisplay());
-//					}
-//					MyArrayAdapter adt = new MyArrayAdapter(fl, R.layout.friend_row, aa);
-//					setListAdapter(adt);
+					log("You have now " + lobby.getNbFriendsOnline() + " friends online");
+					List<SpringAccount> aa = new ArrayList<SpringAccount>();
+					for (SpringAccount act : lobby.getActiveFriendsSince(15)) {
+						aa.add(act);
+						log("  - " + act.shortDisplay());
+					}
+					MyArrayAdapter adt = new MyArrayAdapter(fl, R.layout.friend_row, aa);
+					setListAdapter(adt);
 					break;
 				case TAndroid.HANDLER_NOTIFY_LOGIN:
 					setStatus(R.string.st_login, info);
@@ -205,7 +191,7 @@ public class Main extends ListActivity implements LogLayer {
 					// getResources().getText(R.string.app_name);
 					// CharSequence contentText = st;
 					// Intent notificationIntent = new Intent(fl,
-					// FriendsList.class);
+					// Main.class);
 					// PendingIntent contentIntent =
 					// PendingIntent.getActivity(fl, 0, notificationIntent, 0);
 					//
@@ -227,13 +213,12 @@ public class Main extends ListActivity implements LogLayer {
 		handler = new MyHandler(this);
 
 		setContentView(R.layout.friends_list);
-
-		// notifyDisconnected();
+		
+		setStatus(R.string.st_offline, null);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		dbg("FriendsList.onCreateOptionsMenu()");
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
 		return true;
@@ -257,17 +242,19 @@ public class Main extends ListActivity implements LogLayer {
 		case R.id.options:
 			startActivity(new Intent(this, Options.class));
 			return true;
+		case R.id.friends:
+			startActivity(new Intent(this, ManageFriends.class));
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
 	private void refresh() {
-		// TODO
-		// refreshUI();
+		sendMessageToMainThread(TAndroid.HANDLER_REFRESH_UI, null);
 	}
 
-	public void setStatus(int msg, String info) {
+	private void setStatus(int msg, String info) {
 		TextView status = (TextView) findViewById(R.id.status);
 		String st = getResources().getText(R.string.status) + " " + getResources().getText(msg);
 		if (info != null) {
@@ -277,48 +264,15 @@ public class Main extends ListActivity implements LogLayer {
 	}
 
 	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if (lobby != null) {
-			unbindService(serviceConnection);
-		}
-		dbg("FriendsList.onDestroy()");
-	}
-
-	@Override
 	protected void onPause() {
 		super.onPause();
-		dbg("FriendsList.onPause()");
 		getTAndroid().unsetFriendsListDisplayed();
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-		dbg("FriendsList.onRestart()");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		dbg("FriendsList.onResume()");
 		getTAndroid().setFriendsListDisplayed(this);
-	}
-
-	private TAndroid getTAndroid() {
-		return (TAndroid) getApplication();
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		dbg("FriendsList.onStart()");
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		dbg("FriendsList.onStop()");
 	}
 
 	public void sendMessageToMainThread(int action, String info) {
@@ -333,29 +287,6 @@ public class Main extends ListActivity implements LogLayer {
 		handler.sendMessage(msg);
 	}
 
-	@Override
-	public void dbg(String msg) {
-		getTAndroid().dbg(msg);
-	}
-	
-	@Override
-	public void dbg(Throwable e) {
-		getTAndroid().dbg(e);
-	}
 
-	@Override
-	public void err(String msg) {
-		getTAndroid().err(msg);
-	}
-
-	@Override
-	public void err(Throwable e) {
-		getTAndroid().err(e);
-	}
-
-	@Override
-	public void log(String msg) {
-		getTAndroid().log(msg);
-	}
 
 }

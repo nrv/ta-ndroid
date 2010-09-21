@@ -50,16 +50,22 @@ import com.springrts.tandroid.service.LobbyService;
 public class Options extends PreferenceActivity implements OnPreferenceClickListener, LogLayer {
 	public static final String ABOUT = "about";
 	
-	public Options() {
-		super();
-	}
+	protected LobbyService lobby = null;
+	private ServiceConnection serviceConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			lobby = ((LobbyService.LocalBinder) service).getService();
+		}
 
+		public void onServiceDisconnected(ComponentName className) {
+			lobby = null;
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		dbg("Options.onCreate() -- 1");
 		super.onCreate(savedInstanceState);
 		
-		bindService(new Intent(this, LobbyService.class), mConnection, Context.BIND_AUTO_CREATE);
+		bindService(new Intent(this, LobbyService.class), serviceConnection, 0);
 		
 		getPreferenceManager().setSharedPreferencesName(TAndroid.PREFS);
 		addPreferencesFromResource(R.layout.options);
@@ -110,31 +116,16 @@ public class Options extends PreferenceActivity implements OnPreferenceClickList
 		return version;
 	}
 
-	private LobbyService mBoundService = null;
-	private ServiceConnection mConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			mBoundService = ((LobbyService.LocalBinder) service).getService();
-		}
-
-		public void onServiceDisconnected(ComponentName className) {
-			mBoundService = null;
-		}
-	};
-	
 	@Override
 	protected void onPause() {
 		super.onPause();
-		dbg("Options.onPause() -- 1");
-		mBoundService.notifyConfigurationChanged();
-		dbg("Options.onPause() -- 3");
+		lobby.notifyConfigurationChanged();
 	}
 
 	@Override
 	protected void onDestroy() {
-		dbg("Options.onDestroy() -- 1");
+		unbindService(serviceConnection);
 		super.onDestroy();
-		unbindService(mConnection);
-		dbg("Options.onDestroy() -- 2");
 	}
 	
 	@Override

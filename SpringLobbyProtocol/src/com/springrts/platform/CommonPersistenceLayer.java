@@ -66,7 +66,6 @@ public abstract class CommonPersistenceLayer implements PersistenceLayer {
 	}
 
 	public SpringAccountList friendListFromString(String s) throws NumberFormatException {
-		hardware.dbg("friendListFromString(" + s + ")");
 		SpringAccountList lst = new SpringAccountList();
 		if (s.length() > 0) {
 			String[] d = s.split(SEP1);
@@ -78,7 +77,6 @@ public abstract class CommonPersistenceLayer implements PersistenceLayer {
 	}
 
 	public SpringAccount friendFromString(String s) throws NumberFormatException {
-		hardware.dbg("friendFromString(" + s + ")");
 		String[] d = s.split(SEP2);
 		SpringAccount a = new SpringAccount();
 		a.setInternalId(Integer.parseInt(d[0]));
@@ -98,7 +96,6 @@ public abstract class CommonPersistenceLayer implements PersistenceLayer {
 	}
 
 	public ConnectionContext contextFromString(String s) throws NumberFormatException {
-		hardware.dbg("contextFromString(" + s + ")");
 		String[] d = s.split(SEP2);
 		ConnectionContext c = new ConnectionContext();
 		if (d.length > 0) {
@@ -133,7 +130,6 @@ public abstract class CommonPersistenceLayer implements PersistenceLayer {
 	}
 
 	public Map<String, Pattern> usernamePatternsFromString(String s) {
-		hardware.dbg("usernamePatternsFromString(" + s + ")");
 		String[] d = s.split(SEP2);
 		HashMap<String, Pattern> p = new HashMap<String, Pattern>();
 		for (String a : d) {

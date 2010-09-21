@@ -20,11 +20,6 @@
  */
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-	<PreferenceCategory android:title="@string/options_about">
-		<Preference android:enabled="true" android:key="about" android:title="@string/options_about"
-			android:summary="@string/options_about_desc" android:selectable="true" />
-	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/options_about_cnx">
 		<EditTextPreference android:enabled="true" android:key="cnx_login" android:title="@string/options_about_cnx_login"
 			android:persistent="true" android:defaultValue=""/>
@@ -34,5 +29,10 @@
 			android:persistent="true" android:defaultValue="@string/options_about_cnx_default_server"/>
 		<EditTextPreference android:enabled="true" android:key="cnx_server_port" android:title="@string/options_about_cnx_server_port"
 			android:persistent="true" android:defaultValue="@string/options_about_cnx_default_server_port"/>
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/options_about">
+		<Preference android:enabled="true" android:key="about" android:title="@string/options_about"
+			android:summary="@string/options_about_desc" android:selectable="true" />
 	</PreferenceCategory>
 </PreferenceScreen>

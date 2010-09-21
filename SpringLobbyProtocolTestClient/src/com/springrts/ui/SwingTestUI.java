@@ -94,7 +94,7 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 		pack();
 		setVisible(true);
 		
-		df = DateFormat.getDateInstance(DateFormat.LONG, Locale.FRANCE);
+		df = DateFormat.getTimeInstance(DateFormat.LONG, Locale.FRANCE);
 	}
 
 	private void logToUI(String msg) {

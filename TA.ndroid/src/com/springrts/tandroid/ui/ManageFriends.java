@@ -19,86 +19,20 @@
 
 package com.springrts.tandroid.ui;
 
-import com.springrts.platform.LogLayer;
-import com.springrts.tandroid.TAndroid;
+import com.springrts.tandroid.R;
 
-import android.app.ListActivity;
 import android.os.Bundle;
 
 /**
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
-public class ManageFriends extends ListActivity implements LogLayer {
+public class ManageFriends extends TAndroidListActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-	}
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-	}
-
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
-
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		super.onRestart();
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
-	}
-
-	@Override
-	protected void onStop() {
-		// TODO Auto-generated method stub
-		super.onStop();
-	}
-
-	@Override
-	public void dbg(String msg) {
-		getTAndroid().dbg(msg);
-	}
-
-	@Override
-	public void dbg(Throwable e) {
-		getTAndroid().dbg(e);
-	}
-	
-	@Override
-	public void err(String msg) {
-		getTAndroid().err(msg);
-	}
-
-	@Override
-	public void err(Throwable e) {
-		getTAndroid().err(e);
-	}
-
-	@Override
-	public void log(String msg) {
-		getTAndroid().log(msg);
-	}
-	
-	private TAndroid getTAndroid() {
-		return (TAndroid) getApplication();
+		
+		setContentView(R.layout.manage_list);
 	}
 }

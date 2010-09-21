@@ -19,10 +19,11 @@
 
 package com.springrts.tandroid.service;
 
+import java.util.List;
+
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -98,19 +99,12 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 	}
 
 	public void notifyConfigurationChanged() {
-		dbg("LobbyService.notifyConfigurationChanged()");
 		ConnectionContext context = client.getContext();
 		if (context == null) {
 			context = ConnectionContext.defaultContext();
 		}
 		
 		SharedPreferences settings = getSharedPreferences(TAndroid.PREFS, MODE_PRIVATE);
-		
-		dbg("context = " + context + " - settings = " + settings);
-		
-		for (String k : settings.getAll().keySet()) {
-			dbg("key : " + k + " = " + settings.getString(k, ""));
-		}
 		
 		context.setLogin(settings.getString("cnx_login", ""));
 		try {
@@ -181,21 +175,12 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		dbg("LobbyService.onBind()");
 		return mBinder;
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		dbg("LobbyService.onConfigurationChanged()");
-	}
-	
-	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		dbg("LobbyService.onCreate()");
 
 		client = new MonitoringClient(this);
 
@@ -216,34 +201,16 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		client.setStartPinger(true);
 	}
 	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		dbg("LobbyService.onDestroy()");
-	}
-	
-	@Override
-	public void onLowMemory() {
-		super.onLowMemory();
-		dbg("LobbyService.onLowMemory()");
+	public boolean isConnectedAndRunning() {
+		return client.isConnectedAndRunning();
 	}
 
-	@Override
-	public void onRebind(Intent intent) {
-		super.onRebind(intent);
-		dbg("LobbyService.onRebind()");
+	public List<SpringAccount> getActiveFriendsSince(long nbMinutes) {
+		return client.getActiveFriendsSince(nbMinutes);
 	}
 
-	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
-		dbg("LobbyService.onStart()");
-	}
-
-	@Override
-	public boolean onUnbind(Intent intent) {
-		dbg("LobbyService.onUnbind()");
-		return super.onUnbind(intent);
+	public int getNbFriendsOnline() {
+		return client.getNbFriendsOnline();
 	}
 
 }
