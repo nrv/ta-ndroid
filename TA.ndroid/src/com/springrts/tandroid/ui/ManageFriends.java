@@ -79,6 +79,11 @@ public class ManageFriends extends ListActivity implements LogLayer {
 	}
 
 	@Override
+	public void dbg(Throwable e) {
+		getTAndroid().dbg(e);
+	}
+	
+	@Override
 	public void err(String msg) {
 		getTAndroid().err(msg);
 	}

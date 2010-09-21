@@ -141,6 +141,11 @@ public class Options extends PreferenceActivity implements OnPreferenceClickList
 	public void dbg(String msg) {
 		getTAndroid().dbg(msg);
 	}
+	
+	@Override
+	public void dbg(Throwable e) {
+		getTAndroid().dbg(e);
+	}
 
 	@Override
 	public void err(String msg) {

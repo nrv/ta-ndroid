@@ -28,9 +28,11 @@ import com.springrts.data.SpringAccountList;
 import com.springrts.protocol.ConnectionContext;
 
 /**
+ * Ugly implementation, will be improved later
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
+// TODO Better stuff
 public abstract class CommonPersistenceLayer implements PersistenceLayer {
 	public CommonPersistenceLayer(PlatformLayer hardware) {
 		super();

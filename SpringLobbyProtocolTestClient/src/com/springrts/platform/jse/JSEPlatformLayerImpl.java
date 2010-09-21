@@ -67,6 +67,13 @@ public class JSEPlatformLayerImpl implements PlatformLayer {
 		}
 		err(e.getClass().getName() + " : " + e.getMessage());
 	}
+	
+	public void dbg(Throwable e) {
+		if(doDebug) {
+			e.printStackTrace();
+			dbg(e.getClass().getName() + " : " + e.getMessage());
+		}
+	}
 
 	public void setDebug(boolean dbg) {
 		doDebug = dbg;

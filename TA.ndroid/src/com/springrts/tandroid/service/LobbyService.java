@@ -54,6 +54,11 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 	public void dbg(String msg) {
 		getTAndroid().dbg(msg);
 	}
+	
+	@Override
+	public void dbg(Throwable e) {
+		getTAndroid().dbg(e);
+	}
 
 	@Override
 	public void err(String msg) {

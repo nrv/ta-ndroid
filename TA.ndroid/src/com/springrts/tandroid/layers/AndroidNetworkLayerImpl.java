@@ -55,13 +55,15 @@ public class AndroidNetworkLayerImpl extends CommonNetworkLayer {
 
 	public void disconnectNetwork() {
 		stopSenderAndReceiver();
-		
+
 		if (socket != null) {
 			try {
 				socket.close();
 			} catch (IOException e) {
 			}
 			socket = null;
+			is = null;
+			os = null;
 			client.notifyDisconnected();
 		}
 	}

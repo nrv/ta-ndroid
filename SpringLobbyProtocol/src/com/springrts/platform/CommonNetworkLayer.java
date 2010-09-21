@@ -39,12 +39,13 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 	protected PlatformLayer hardware;
 	protected ConnectionContext context;
 	protected LobbyCommandListener client;
-	protected boolean running;
 	protected InputStream is;
 	protected OutputStream os;
 
-	protected Sender sender;
-	protected Receiver receiver;
+	private Sender sender;
+	private boolean senderRunning;
+	private Receiver receiver;
+	private boolean receiverRunning;
 
 	public CommonNetworkLayer(PlatformLayer hardware) {
 		super();
@@ -63,7 +64,7 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 
 		public synchronized void run() {
 			hardware.threadCreationSpecificStuff();
-			while (running) {
+			while (senderRunning) {
 				if (message == null) {
 					try {
 						wait();
@@ -93,7 +94,7 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 	private class Receiver extends Thread {
 		public synchronized void run() {
 			hardware.threadCreationSpecificStuff();
-			while (running) {
+			while (receiverRunning) {
 				try {
 					StringBuffer sb = new StringBuffer();
 					int c;
@@ -110,7 +111,7 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 						hardware.parse(s, client);
 					}
 				} catch (IOException e) {
-					hardware.err(e);
+					hardware.dbg(e);
 					client.disconnect();
 				} catch (ProtocolException e) {
 					hardware.err(e);
@@ -125,36 +126,42 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 	}
 
 	protected void startSenderAndReceiver() {
-		running = true;
-
+		senderRunning = true;
 		sender = new Sender();
 		sender.start();
+		
+		receiverRunning = true;
 		receiver = new Receiver();
 		receiver.start();
 	}
 
 	protected void stopSenderAndReceiver() {
-		running = false;
-
-		if (sender != null) {
-			sender.send(null);
-		}
+		receiverRunning = false;
 
 		if (sender != null) {
 			try {
-				sender.join();
-			} catch (InterruptedException e) {
+				ping();
+			} catch (ProtocolException e) {
 			}
 		}
 		
 		if (receiver != null) {
+			receiver.interrupt();
 			try {
-				receiver.interrupt();
 				receiver.join();
 			} catch (InterruptedException e) {
 			}
 		}
 		
+		senderRunning = false;
+		if (sender != null) {
+			sender.send(null);
+			try {
+				sender.join();
+			} catch (InterruptedException e) {
+			}
+		}
+
 		if (is != null) {
 			try {
 				is.close();
@@ -197,7 +204,7 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 	}
 
 	public boolean isRunning() {
-		return running;
+		return receiverRunning && senderRunning;
 	}
 
 	public ConnectionContext getContext() {

@@ -25,6 +25,7 @@ package com.springrts.platform;
  */
 public interface LogLayer {
 	void dbg(String msg);
+	void dbg(Throwable e);
 	void log(String msg);
 	void err(String msg);
 	void err(Throwable e);

@@ -65,6 +65,14 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 			Log.d(LOG_TAG, msg);
 		}
 	}
+	
+	@Override
+	public void dbg(Throwable e) {
+		if(DEBUG_LEVEL_ENABLED) {
+			e.printStackTrace();
+			dbg(e.getClass().getName() + " : " + e.getMessage());
+		}
+	}
 
 	@Override
 	public String encodePassword(String plainPassword, String preferredEncoding) throws ProtocolException {

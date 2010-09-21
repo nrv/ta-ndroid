@@ -53,13 +53,6 @@ public class JSENetworkLayerImpl extends CommonNetworkLayer {
 	}
 
 	public void disconnectNetwork() {
-		if (socket != null) {
-			try {
-				socket.close();
-			} catch (IOException e) {
-			}
-		}
-		
 		stopSenderAndReceiver();
 
 		if (socket != null) {

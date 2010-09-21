@@ -1,7 +1,29 @@
+/*
+ * Copyright (C) 2010 NRV - nherve75@gmail.com
+ * 
+ * This file is part of SpringLobbyProtocol.
+ * 
+ * SpringLobbyProtocol is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ * 
+ * SpringLobbyProtocol is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SpringLobbyProtocol. If not, see http://www.gnu.org/licenses/
+ * 
+ */
+
 package com.springrts.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -17,6 +39,10 @@ import com.springrts.platform.jse.JSEPersistenceLayerImpl;
 import com.springrts.platform.jse.JSEPlatformLayerImpl;
 import com.springrts.protocol.ConnectionContext;
 
+/**
+ * @author NRV - nherve75@gmail.com
+ * @version 1.0.0
+ */
 public class SwingTestUI extends JFrame implements MonitoringApplication, ActionListener {
 	private static final long serialVersionUID = -3975429257823026504L;
 
@@ -28,6 +54,8 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 	private String password;
 	private String server;
 	private String port;
+	
+	private DateFormat df;
 
 	private MonitoringClient client;
 
@@ -65,9 +93,12 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 
 		pack();
 		setVisible(true);
+		
+		df = DateFormat.getDateInstance(DateFormat.LONG, Locale.FRANCE);
 	}
 
 	private void logToUI(String msg) {
+		taLogWindow.append(df.format(new Date()) + " - " + msg + "\n");
 	}
 
 	@Override
@@ -78,48 +109,46 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 
 	@Override
 	public void notifyConnected() {
-		// TODO Auto-generated method stub
-
+		logToUI("You are now connected");
 	}
 
 	@Override
 	public void notifyLogin() {
-		// TODO Auto-generated method stub
-
+		logToUI("Login accepted");
 	}
 
 	@Override
 	public void notifyAccessDenied(String why) {
-		// TODO Auto-generated method stub
-
+		logToUI("Access denied : " + why);
 	}
 
 	@Override
 	public void notifyLoginEnd() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void notifyDisconnected() {
-		// TODO Auto-generated method stub
-
+		logToUI("You are now disconnected");
 	}
 
 	@Override
 	public void notifyFriendDisconnected(SpringAccount act) {
-		// TODO Auto-generated method stub
-
+		logToUI(act.getUsername() + " has disconnected");
 	}
 
 	@Override
 	public void notifyFriendConnected(SpringAccount act) {
-		// TODO Auto-generated method stub
-
+		logToUI(act.getUsername() + " is connected");
 	}
 
 	public static void main(String[] args) {
-		SwingTestUI test = new SwingTestUI(args);
+		if (args.length != 4) {
+			System.err.println("Please launch with the following parameters :");
+			System.err.println("SwingTestUI [login] [password] [server] [port]");
+			return;
+		}
+
+		new SwingTestUI(args);
 	}
 
 	@Override

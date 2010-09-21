@@ -337,6 +337,11 @@ public class Main extends ListActivity implements LogLayer {
 	public void dbg(String msg) {
 		getTAndroid().dbg(msg);
 	}
+	
+	@Override
+	public void dbg(Throwable e) {
+		getTAndroid().dbg(e);
+	}
 
 	@Override
 	public void err(String msg) {
