@@ -21,7 +21,11 @@ package com.springrts.tandroid.service;
 
 import java.util.List;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
@@ -33,9 +37,11 @@ import com.springrts.data.SpringAccount;
 import com.springrts.platform.LogLayer;
 import com.springrts.protocol.ConnectionContext;
 import com.springrts.protocol.ProtocolException;
+import com.springrts.tandroid.R;
 import com.springrts.tandroid.TAndroid;
 import com.springrts.tandroid.layers.AndroidNetworkLayerImpl;
 import com.springrts.tandroid.layers.AndroidPersistenceLayerImpl;
+import com.springrts.tandroid.ui.Main;
 
 /**
  * @author NRV - nherve75@gmail.com
@@ -47,15 +53,17 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 			return LobbyService.this;
 		}
 	}
+
 	private MonitoringClient client;
+	private Notification notification;
 
 	private final IBinder mBinder = new LocalBinder();
-	
+
 	@Override
 	public void dbg(String msg) {
 		getTAndroid().dbg(msg);
 	}
-	
+
 	@Override
 	public void dbg(Throwable e) {
 		getTAndroid().dbg(e);
@@ -75,11 +83,11 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 	public void log(String msg) {
 		getTAndroid().log(msg);
 	}
-	
+
 	private TAndroid getTAndroid() {
-		return (TAndroid)getApplication();
+		return (TAndroid) getApplication();
 	}
-	
+
 	public void login() {
 		try {
 			client.loadConnectionContext();
@@ -103,9 +111,9 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		if (context == null) {
 			context = ConnectionContext.defaultContext();
 		}
-		
+
 		SharedPreferences settings = getSharedPreferences(TAndroid.PREFS, MODE_PRIVATE);
-		
+
 		context.setLogin(settings.getString("cnx_login", ""));
 		try {
 			context.setEncodedPassword(getTAndroid().encodePassword(settings.getString("cnx_password", ""), context.getCharset()));
@@ -118,27 +126,51 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		} catch (ProtocolException e) {
 			err(e);
 		}
-		
+
 		try {
 			client.saveConnectionContext(context);
-			
-			//TODO reconnect if something has changed
+
+			// TODO reconnect if something has changed
 		} catch (ProtocolException e) {
 			err(e);
 		}
-		
+
 	}
-
-
 
 	@Override
 	public void notifyConnected() {
 		getTAndroid().notifyConnected();
+
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		int icon = R.drawable.notification;
+		CharSequence tickerText = getResources().getText(R.string.st_online);
+		long when = System.currentTimeMillis();
+		notification = new Notification(icon, tickerText, when);
+		notification.flags = Notification.DEFAULT_ALL | Notification.FLAG_NO_CLEAR;
+		Context context = getApplicationContext();
+		CharSequence contentTitle = getResources().getText(R.string.app_name);
+		CharSequence contentText = getResources().getText(R.string.st_online);
+		Intent notificationIntent = new Intent(this, Main.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+		notification.number = 1;
+		
+		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+
+		mNotificationManager.notify(1, notification);
 	}
 
 	@Override
 	public void notifyDisconnected() {
+		dbg("LobbyService.notifyDisconnected()");
 		getTAndroid().notifyDisconnected();
+		if (notification != null) {
+			NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			notification.flags = Notification.DEFAULT_ALL;
+			mNotificationManager.notify(1, notification);
+			mNotificationManager.cancel(1);
+			// TODO en cours
+		}
 	}
 
 	@Override
@@ -147,7 +179,6 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 			getTAndroid().notifyFriendConnected(act);
 		}
 	}
-
 
 	@Override
 	public void notifyFriendDisconnected(SpringAccount act) {
@@ -198,9 +229,15 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 			err(e);
 		}
 
+		// TODO temp stuff
+		client.addClan("FLM");
+		// ---
+
 		client.setStartPinger(true);
+
+		notification = null;
 	}
-	
+
 	public boolean isConnectedAndRunning() {
 		return client.isConnectedAndRunning();
 	}

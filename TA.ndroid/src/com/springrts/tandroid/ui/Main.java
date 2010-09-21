@@ -161,11 +161,6 @@ public class Main extends TAndroidListActivity {
 					break;
 				case TAndroid.HANDLER_NOTIFY_ONLINE:
 					setStatus(R.string.st_online, info);
-					if (refresher != null) {
-						refresher.stopRefresher();
-					}
-					refresher = new UIRefresher();
-					refresher.start();
 					break;
 				case TAndroid.HANDLER_NOTIFY_CONNECTED:
 					setStatus(R.string.st_connected, info);
@@ -177,29 +172,6 @@ public class Main extends TAndroidListActivity {
 				case TAndroid.HANDLER_NOTIFY_FRIEND_CONNECTED:
 					String st = info + " " + getResources().getText(R.string.fr_connected);
 					Toast.makeText(fl, st, Toast.LENGTH_LONG).show();
-					// String ns = Context.NOTIFICATION_SERVICE;
-					// NotificationManager mNotificationManager =
-					// (NotificationManager) getSystemService(ns);
-					// int icon = R.drawable.notification;
-					// CharSequence tickerText = st;
-					// long when = System.currentTimeMillis();
-					//
-					// Notification notification = new Notification(icon,
-					// tickerText, when);
-					// Context context = getApplicationContext();
-					// CharSequence contentTitle =
-					// getResources().getText(R.string.app_name);
-					// CharSequence contentText = st;
-					// Intent notificationIntent = new Intent(fl,
-					// Main.class);
-					// PendingIntent contentIntent =
-					// PendingIntent.getActivity(fl, 0, notificationIntent, 0);
-					//
-					// notification.setLatestEventInfo(context, contentTitle,
-					// contentText, contentIntent);
-					//					
-					//
-					// mNotificationManager.notify(1, notification);
 					break;
 				case TAndroid.HANDLER_NOTIFY_FRIEND_DISCONNECTED:
 					String st2 = info + " " + getResources().getText(R.string.fr_disconnected);
@@ -215,6 +187,12 @@ public class Main extends TAndroidListActivity {
 		setContentView(R.layout.friends_list);
 		
 		setStatus(R.string.st_offline, null);
+		
+//		if (refresher != null) {
+//			refresher.stopRefresher();
+//		}
+//		refresher = new UIRefresher();
+//		refresher.start();
 	}
 
 	@Override
