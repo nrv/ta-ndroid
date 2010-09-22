@@ -127,11 +127,11 @@ public class Main extends TAndroidListActivity {
 		}
 
 		class MyHandler extends Handler {
-			private Main fl;
+			private Main mainUI;
 
-			public MyHandler(Main fl) {
+			public MyHandler(Main mainUI) {
 				super();
-				this.fl = fl;
+				this.mainUI = mainUI;
 			}
 
 			public void handleMessage(Message msg) {
@@ -144,38 +144,30 @@ public class Main extends TAndroidListActivity {
 
 				switch (action) {
 				case TAndroid.HANDLER_REFRESH_UI:
-					log("You have now " + lobby.getNbFriendsOnline() + " friends online");
 					List<SpringAccount> aa = new ArrayList<SpringAccount>();
 					for (SpringAccount act : lobby.getActiveFriendsSince(15)) {
 						aa.add(act);
-						log("  - " + act.shortDisplay());
 					}
-					MyArrayAdapter adt = new MyArrayAdapter(fl, R.layout.friend_row, aa);
+					MyArrayAdapter adt = new MyArrayAdapter(mainUI, R.layout.friend_row, aa);
 					setListAdapter(adt);
 					break;
 				case TAndroid.HANDLER_NOTIFY_LOGIN:
-					setStatus(R.string.st_login, info);
-					break;
 				case TAndroid.HANDLER_NOTIFY_OFFLINE:
-					setStatus(R.string.st_offline, info);
-					break;
 				case TAndroid.HANDLER_NOTIFY_ONLINE:
-					setStatus(R.string.st_online, info);
-					break;
 				case TAndroid.HANDLER_NOTIFY_CONNECTED:
-					setStatus(R.string.st_connected, info);
+					setStatus(lobby.getCurrentStatus(), lobby.getAdditionnalInformation());
 					break;
 				case TAndroid.HANDLER_NOTIFY_DENIED:
-					setStatus(R.string.st_denied, info);
-					Toast.makeText(fl, info, Toast.LENGTH_LONG).show();
+					setStatus(action, info);
+					Toast.makeText(mainUI, info, Toast.LENGTH_LONG).show();
 					break;
 				case TAndroid.HANDLER_NOTIFY_FRIEND_CONNECTED:
 					String st = info + " " + getResources().getText(R.string.fr_connected);
-					Toast.makeText(fl, st, Toast.LENGTH_LONG).show();
+					Toast.makeText(mainUI, st, Toast.LENGTH_LONG).show();
 					break;
 				case TAndroid.HANDLER_NOTIFY_FRIEND_DISCONNECTED:
 					String st2 = info + " " + getResources().getText(R.string.fr_disconnected);
-					Toast.makeText(fl, st2, Toast.LENGTH_LONG).show();
+					Toast.makeText(mainUI, st2, Toast.LENGTH_LONG).show();
 					break;
 				}
 
@@ -185,8 +177,6 @@ public class Main extends TAndroidListActivity {
 		handler = new MyHandler(this);
 
 		setContentView(R.layout.friends_list);
-		
-		setStatus(R.string.st_offline, null);
 		
 //		if (refresher != null) {
 //			refresher.stopRefresher();
@@ -263,6 +253,12 @@ public class Main extends TAndroidListActivity {
 		}
 		msg.setData(data);
 		handler.sendMessage(msg);
+	}
+
+	@Override
+	protected void notifyLobbyServiceConnected() {
+		setStatus(lobby.getCurrentStatus(), lobby.getAdditionnalInformation());
+		refresh();
 	}
 
 

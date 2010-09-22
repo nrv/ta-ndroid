@@ -35,4 +35,9 @@ public class ManageFriends extends TAndroidListActivity {
 		
 		setContentView(R.layout.manage_list);
 	}
+
+	@Override
+	protected void notifyLobbyServiceConnected() {
+		
+	}
 }

@@ -23,7 +23,6 @@ import java.security.NoSuchAlgorithmException;
 
 import android.app.Application;
 import android.os.Looper;
-import android.os.Vibrator;
 import android.util.Log;
 
 import com.springrts.client.MonitoringApplication;
@@ -112,50 +111,42 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 
 	@Override
 	public void notifyAccessDenied(String why) {
-		sendMessageToFriendsListUI(HANDLER_NOTIFY_DENIED, why);
+		sendMessageToMainUI(HANDLER_NOTIFY_DENIED, why);
 	}
 
 	@Override
 	public void notifyConnected() {
-		sendMessageToFriendsListUI(HANDLER_NOTIFY_CONNECTED);
+		sendMessageToMainUI(HANDLER_NOTIFY_CONNECTED);
 	}
 
 	@Override
 	public void notifyDisconnected() {
-		sendMessageToFriendsListUI(HANDLER_NOTIFY_OFFLINE);
+		sendMessageToMainUI(HANDLER_NOTIFY_OFFLINE);
 	}
 
 	@Override
 	public void notifyFriendConnected(SpringAccount act) {
-		sendMessageToFriendsListUI(HANDLER_NOTIFY_FRIEND_CONNECTED, act.getUsername());
+		sendMessageToMainUI(HANDLER_NOTIFY_FRIEND_CONNECTED, act.getUsername());
 	}
 
 	@Override
 	public void notifyFriendDisconnected(SpringAccount act) {
-		sendMessageToFriendsListUI(HANDLER_NOTIFY_FRIEND_DISCONNECTED, act.getUsername());
+		sendMessageToMainUI(HANDLER_NOTIFY_FRIEND_DISCONNECTED, act.getUsername());
 	}
 
 	@Override
 	public void notifyFriendsOnlineChanged() {
 		refreshUI();
-		notifyUser();
 	}
 
 	@Override
 	public void notifyLogin() {
-		sendMessageToFriendsListUI(HANDLER_NOTIFY_LOGIN);
+		sendMessageToMainUI(HANDLER_NOTIFY_LOGIN);
 	}
 
 	@Override
 	public void notifyLoginEnd() {
-		sendMessageToFriendsListUI(HANDLER_NOTIFY_ONLINE);
-	}
-
-	private void notifyUser() {
-		Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-		if (v != null) {
-			v.vibrate(new long[] { 0, 100 }, -1);
-		}
+		sendMessageToMainUI(HANDLER_NOTIFY_ONLINE);
 	}
 
 	@Override
@@ -170,18 +161,16 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 	}
 
 	private synchronized void refreshUI() {
-		sendMessageToFriendsListUI(HANDLER_REFRESH_UI);
+		sendMessageToMainUI(HANDLER_REFRESH_UI);
 	}
 
-	private void sendMessageToFriendsListUI(int action) {
-		sendMessageToFriendsListUI(action, null);
+	private void sendMessageToMainUI(int action) {
+		sendMessageToMainUI(action, null);
 	}
 
-	private void sendMessageToFriendsListUI(int action, String info) {
+	private void sendMessageToMainUI(int action, String info) {
 		if (friendsListDisplayed != null) {
 			friendsListDisplayed.sendMessageToMainThread(action, info);
-		} else {
-			log("aborted sendMessageToMainThread(" + action + ") " + info);
 		}
 	}
 

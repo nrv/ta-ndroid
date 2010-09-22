@@ -38,12 +38,15 @@ public abstract class TAndroidListActivity extends ListActivity implements LogLa
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			lobby = ((LobbyService.LocalBinder) service).getService();
+			notifyLobbyServiceConnected();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
 			lobby = null;
 		}
 	};
+	
+	protected abstract void notifyLobbyServiceConnected();
 	
 	@Override
 	protected void onStart() {
@@ -53,9 +56,9 @@ public abstract class TAndroidListActivity extends ListActivity implements LogLa
 
 	@Override
 	protected void onStop() {
+		super.onStop();
 		lobby = null;
 		unbindService(serviceConnection);
-		super.onStop();
 	}
 	
 	protected TAndroid getTAndroid() {
