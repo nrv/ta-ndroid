@@ -49,6 +49,7 @@ import com.springrts.tandroid.service.LobbyService;
 public class Main extends TAndroidListActivity {
 	public static final String HANDLER_ACTION = "a";
 	public static final String HANDLER_INFO = "i";
+	public static final int UI_REFRESH_INTERVAL = 15;
 
 	private Handler handler;
 	private UIRefresher refresher;
@@ -62,7 +63,7 @@ public class Main extends TAndroidListActivity {
 		private boolean doRefresh;
 
 		public synchronized void run() {
-			int refreshInterval = 15 * 1000;
+			int refreshInterval = UI_REFRESH_INTERVAL * 1000;
 			while (doRefresh) {
 				try {
 					wait(refreshInterval);
@@ -103,8 +104,10 @@ public class Main extends TAndroidListActivity {
 		refresher = null;
 
 		class MyArrayAdapter extends ArrayAdapter<SpringAccount> {
+			private int textViewResourceId;
 			public MyArrayAdapter(Context context, int textViewResourceId, List<SpringAccount> objects) {
 				super(context, textViewResourceId, objects);
+				this.textViewResourceId = textViewResourceId;
 			}
 
 			@Override
@@ -113,13 +116,13 @@ public class Main extends TAndroidListActivity {
 
 				if (view == null) {
 					LayoutInflater li = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					view = (TextView) li.inflate(R.layout.friend_row, null);
+					view = (TextView) li.inflate(textViewResourceId, null);
 				}
 
 				SpringAccount act = getItem(position);
 
 				if (act != null) {
-					view.setText(act.shortDisplay(getResources().getText(R.string.st_online).toString(), getResources().getText(R.string.min).toString(), getResources().getText(R.string.hour).toString(), getResources().getText(R.string.day).toString()));
+					view.setText(act.getShortDisplay(getResources().getText(R.string.st_online).toString(), getResources().getText(R.string.min).toString(), getResources().getText(R.string.hour).toString(), getResources().getText(R.string.day).toString()));
 				}
 
 				return view;
@@ -244,7 +247,6 @@ public class Main extends TAndroidListActivity {
 	}
 
 	public void sendMessageToMainThread(int action, String info) {
-		log("sendMessageToMainThread(" + action + ") " + info);
 		Message msg = handler.obtainMessage();
 		Bundle data = new Bundle();
 		data.putInt(HANDLER_ACTION, action);

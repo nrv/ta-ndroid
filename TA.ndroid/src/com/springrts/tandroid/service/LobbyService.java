@@ -19,6 +19,8 @@
 
 package com.springrts.tandroid.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.app.Notification;
@@ -34,6 +36,7 @@ import android.os.IBinder;
 import com.springrts.client.MonitoringApplication;
 import com.springrts.client.MonitoringClient;
 import com.springrts.data.SpringAccount;
+import com.springrts.data.UsernamePattern;
 import com.springrts.platform.LogLayer;
 import com.springrts.protocol.ConnectionContext;
 import com.springrts.protocol.ProtocolException;
@@ -55,13 +58,13 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 	}
 
 	private static final int NOTIFICATION_ID = 1;
-	
+
 	private MonitoringClient client;
 	private NotificationManager notificationManager;
 	private Notification notification;
 
 	private final IBinder mBinder = new LocalBinder();
-	
+
 	private int currentStatus;
 	private String additionnalInformation;
 
@@ -143,13 +146,16 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 			err(e);
 		}
 	}
-	
+
 	private void createNotification() {
 		int icon = R.drawable.notification;
 		CharSequence tickerText = getResources().getText(R.string.st_online);
 		long when = System.currentTimeMillis();
 		notification = new Notification(icon, tickerText, when);
-		notification.flags = Notification.DEFAULT_ALL | Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+		// notification.flags = Notification.DEFAULT_ALL |
+		// Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+		// notification.flags = Notification.DEFAULT_ALL |
+		// Notification.FLAG_ONGOING_EVENT;
 
 		CharSequence contentTitle = getResources().getText(R.string.app_name);
 		CharSequence contentText = getResources().getText(R.string.st_online);
@@ -157,33 +163,39 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
-		
+
 		// Need to do this way to have numbers activated on this notification
 		updateNotification(1);
 		updateNotification(0);
 	}
-	
-	private void cancelNotification() {
-		if (notification != null) {
-			dbg("LobbyService.notifyDisconnected() will try to cancel notification");
-			
-			CharSequence contentTitle = getResources().getText(R.string.app_name);
-			CharSequence contentText = getResources().getText(R.string.st_offline);
-			Intent notificationIntent = new Intent(this, Main.class);
-			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-			notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
-			notification.flags = Notification.DEFAULT_ALL;
-			
-			updateNotification(0);
-			notificationManager.cancel(NOTIFICATION_ID);
-			// TODO en cours
-		}
+	private void cancelNotification() {
+		// if (notification != null) {
+		dbg("LobbyService.notifyDisconnected() will try to cancel notification");
+		//			
+		// CharSequence contentTitle =
+		// getResources().getText(R.string.app_name);
+		// CharSequence contentText =
+		// getResources().getText(R.string.st_offline);
+		// Intent notificationIntent = new Intent(this, Main.class);
+		// PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+		// notificationIntent, 0);
+		//
+		// notification.setLatestEventInfo(getApplicationContext(),
+		// contentTitle, contentText, contentIntent);
+		// notification.flags = Notification.DEFAULT_ALL;
+		//			
+		// updateNotification(0);
+		notificationManager.cancel(NOTIFICATION_ID);
+		// TODO en cours
+		// }
 	}
-	
+
 	private void updateNotification(int nb) {
-		notification.number = nb;
-		notificationManager.notify(NOTIFICATION_ID, notification);
+		if (isConnectedAndRunning()) {
+			notification.number = nb;
+			notificationManager.notify(NOTIFICATION_ID, notification);
+		}
 	}
 
 	@Override
@@ -191,7 +203,7 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		currentStatus = R.string.st_connected;
 		additionnalInformation = null;
 		getTAndroid().notifyConnected();
-		createNotification();		
+		createNotification();
 	}
 
 	@Override
@@ -265,14 +277,14 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		}
 
 		// TODO temp stuff
-		client.addClan("FLM");
+		client.addClanToMonitor("FLM");
 		// ---
 
 		client.setStartPinger(true);
 
 		notification = null;
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
+
 		currentStatus = R.string.st_offline;
 		additionnalInformation = null;
 	}
@@ -300,6 +312,23 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		return Service.START_STICKY;
+	}
+
+	public void addClanToMonitor(String c) {
+		client.addClanToMonitor(c);
+	}
+
+	public void addFriendToMonitor(String username) {
+		client.addFriendToMonitor(username);
+	}
+
+	public List<String> getUsernamePatterns() {
+		ArrayList<String> lst = new ArrayList<String>();
+		for (UsernamePattern p : client.getUsernamePatterns()) {
+			lst.add(p.getDisplay());
+		}
+		Collections.sort(lst);
+		return lst;
 	}
 
 }

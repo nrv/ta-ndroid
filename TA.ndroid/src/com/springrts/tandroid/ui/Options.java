@@ -93,7 +93,7 @@ public class Options extends PreferenceActivity implements OnPreferenceClickList
 			info.setText(Html.fromHtml(getString(R.string.options_about_info, getVersionNumber(this))));
 			builder.setView(view);
 
-			builder.setNegativeButton(R.string.close, new OnClickListener() {
+			builder.setNegativeButton(R.string.ok, new OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
 				}

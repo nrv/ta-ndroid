@@ -64,7 +64,7 @@ public class JSETestClient implements MonitoringApplication {
 			context.setEncodedPassword(pwdenc.encodePassword(password, context.getCharset()));
 			pers.saveConnectionContext(context);
 			
-			client.addClan("FLM");
+			client.addClanToMonitor("FLM");
 			pers.saveUsernamePatterns(client.getUsernamePatterns());
 			
 			try {
@@ -95,7 +95,7 @@ public class JSETestClient implements MonitoringApplication {
 		if ((client != null) && client.isLoginFinished()) {
 			System.out.println("You have now " + client.getNbFriendsOnline() + " friends online :");
 			for (SpringAccount act : client.getActiveFriendsSince(15)) {
-				System.out.println("  - " + act.shortDisplay());
+				System.out.println("  - " + act.getShortDisplay());
 			}
 		}
 	}

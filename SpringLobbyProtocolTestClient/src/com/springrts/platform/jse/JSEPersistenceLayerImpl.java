@@ -25,10 +25,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 import com.springrts.data.SpringAccountList;
+import com.springrts.data.UsernamePatternList;
 import com.springrts.platform.CommonPersistenceLayer;
 import com.springrts.platform.PlatformLayer;
 import com.springrts.protocol.ConnectionContext;
@@ -43,6 +42,13 @@ public class JSEPersistenceLayerImpl extends CommonPersistenceLayer {
 	private final static String FILE_CONTEXT = "context.txt";
 	private final static String FILE_PATTERNS = "patterns.txt";
 
+	private void delete(String f) throws IOException {
+		File td = new File(f);
+		if (td.exists()) {
+			td.delete();
+		}
+	}
+	
 	private void save(String s, String f) throws IOException {
 		FileWriter fw = new FileWriter(new File(f));
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -99,7 +105,7 @@ public class JSEPersistenceLayerImpl extends CommonPersistenceLayer {
 	}
 
 	@Override
-	public Map<String, Pattern> loadUsernamePatterns() throws ProtocolException {
+	public UsernamePatternList loadUsernamePatterns() throws ProtocolException {
 		try {
 			return usernamePatternsFromString(load(FILE_PATTERNS));
 		} catch (IOException e) {
@@ -108,9 +114,36 @@ public class JSEPersistenceLayerImpl extends CommonPersistenceLayer {
 	}
 
 	@Override
-	public void saveUsernamePatterns(Map<String, Pattern> p) throws ProtocolException {
+	public void saveUsernamePatterns(UsernamePatternList p) throws ProtocolException {
 		try {
 			save(usernamePatternsAsString(p), FILE_PATTERNS);
+		} catch (IOException e) {
+			throw new ProtocolException(e);
+		}
+	}
+
+	@Override
+	public void clearConnectionContext() throws ProtocolException {
+		try {
+			delete(FILE_CONTEXT);
+		} catch (IOException e) {
+			throw new ProtocolException(e);
+		}
+	}
+
+	@Override
+	public void clearFriends() throws ProtocolException {
+		try {
+			delete(FILE_FRIENDS);
+		} catch (IOException e) {
+			throw new ProtocolException(e);
+		}
+	}
+
+	@Override
+	public void clearUsernamePatterns() throws ProtocolException {
+		try {
+			delete(FILE_PATTERNS);
 		} catch (IOException e) {
 			throw new ProtocolException(e);
 		}

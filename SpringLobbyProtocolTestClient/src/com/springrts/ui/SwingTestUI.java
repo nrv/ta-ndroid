@@ -29,6 +29,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import com.springrts.client.MonitoringApplication;
@@ -54,7 +55,7 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 	private String password;
 	private String server;
 	private String port;
-	
+
 	private DateFormat df;
 
 	private MonitoringClient client;
@@ -66,13 +67,15 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 		password = args[1];
 		server = args[2];
 		port = args[3];
-		
+
 		JPanel mainPanel = new JPanel();
 		mainPanel.setOpaque(false);
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 
 		taLogWindow = new JTextArea();
-		mainPanel.add(taLogWindow);
+		JScrollPane scrollPane = new JScrollPane(taLogWindow);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		mainPanel.add(scrollPane);
 
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setOpaque(false);
@@ -93,7 +96,7 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 
 		pack();
 		setVisible(true);
-		
+
 		df = DateFormat.getTimeInstance(DateFormat.LONG, Locale.FRANCE);
 	}
 
@@ -176,7 +179,7 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 		client = new MonitoringClient(this);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+
 		JSEPlatformLayerImpl hdw = new JSEPlatformLayerImpl();
 		hdw.setDebug(true);
 
@@ -190,6 +193,8 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 		client.setStartPinger(true);
 
 		try {
+			client.clearParameters();
+			
 			ConnectionContext context = ConnectionContext.defaultContext();
 			context.setServerIP(server);
 			context.setServerPort(port);
@@ -197,13 +202,16 @@ public class SwingTestUI extends JFrame implements MonitoringApplication, Action
 			context.setEncodedPassword(hdw.encodePassword(password, context.getCharset()));
 			pers.saveConnectionContext(context);
 
-			client.addClan("FLM");
+			client.addClanToMonitor("FLM");
 			pers.saveUsernamePatterns(client.getUsernamePatterns());
+			
+			pers.saveFriends(client.getFriends());
 
 			try {
 				client.loadParameters();
 			} catch (Exception e1) {
 				System.err.println("SwingTestUI catched an exception : " + e1.getMessage());
+				e1.printStackTrace();
 			}
 
 			client.connect();

@@ -19,16 +19,15 @@
 
 package com.springrts.platform;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import com.springrts.data.SpringAccount;
 import com.springrts.data.SpringAccountList;
+import com.springrts.data.UsernamePattern;
+import com.springrts.data.UsernamePatternList;
 import com.springrts.protocol.ConnectionContext;
 
 /**
  * Ugly implementation, will be improved later
+ * 
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
@@ -67,7 +66,7 @@ public abstract class CommonPersistenceLayer implements PersistenceLayer {
 
 	public SpringAccountList friendListFromString(String s) throws NumberFormatException {
 		SpringAccountList lst = new SpringAccountList();
-		if (s.length() > 0) {
+		if ((s != null) && (s.length() > 0)) {
 			String[] d = s.split(SEP1);
 			for (String a : d) {
 				lst.put(friendFromString(a));
@@ -116,24 +115,39 @@ public abstract class CommonPersistenceLayer implements PersistenceLayer {
 		return c;
 	}
 
-	public String usernamePatternsAsString(Map<String, Pattern> p) {
+	public String patternAsString(UsernamePattern pt) {
+		String s = "";
+		s += pt.getPattern();
+		s += SEP2 + pt.getDisplay();
+		return s;
+	}
+
+	public String usernamePatternsAsString(UsernamePatternList p) {
 		String s = "";
 
-		for (String pt : p.keySet()) {
+		for (UsernamePattern pt : p) {
 			if (s.length() > 0) {
 				s += SEP1;
 			}
-			s += pt;
+			s += patternAsString(pt);
 		}
 
 		return s;
 	}
 
-	public Map<String, Pattern> usernamePatternsFromString(String s) {
+	public UsernamePattern patternFromString(String s) {
 		String[] d = s.split(SEP2);
-		HashMap<String, Pattern> p = new HashMap<String, Pattern>();
-		for (String a : d) {
-			p.put(a, Pattern.compile(a));
+		return new UsernamePattern(d[0], d[1]);
+	}
+
+	public UsernamePatternList usernamePatternsFromString(String s) {
+		UsernamePatternList p = new UsernamePatternList();
+		if ((s != null) && (s.length() > 0)) {
+			String[] d = s.split(SEP1);
+			for (String a : d) {
+				UsernamePattern pt = patternFromString(a);
+				p.put(pt);
+			}
 		}
 		return p;
 	}

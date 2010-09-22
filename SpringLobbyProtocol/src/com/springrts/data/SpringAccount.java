@@ -64,20 +64,20 @@ public class SpringAccount {
 		return currentlyOnline;
 	}
 	
-	public void seenNow() {
+	public void notifySeenNow() {
 		setLastTimeSeen(System.currentTimeMillis());
 	}
 
 	public void setCurrentlyOnline(boolean currentlyOnline) {
 		this.currentlyOnline = currentlyOnline;
-		seenNow();
+		notifySeenNow();
 	}
 	
-	public String shortDisplay() {
-		return shortDisplay("online", " m", " h", " d");
+	public String getShortDisplay() {
+		return getShortDisplay("online", " m", " h", " d");
 	}
 	
-	public String seen(String min, String hour, String day) {
+	public String getSeen(String min, String hour, String day) {
 		String r = "";
 		long diffmin = System.currentTimeMillis() - getLastTimeSeen();
 		diffmin /= (60 * 1000);
@@ -108,7 +108,7 @@ public class SpringAccount {
 		return r;
 	}
 	
-	public String shortDisplay(String online, String min, String hour, String day) {
+	public String getShortDisplay(String online, String min, String hour, String day) {
 		String r = "[ ";
 		
 		if (isCurrentlyOnline()) {
@@ -116,7 +116,7 @@ public class SpringAccount {
 		} else {
 			if (getLastTimeSeen() > 0) {
 				r += spaces(online.length() - (min.length() + 1));
-				r += seen(min, hour, day);
+				r += getSeen(min, hour, day);
 			} else {
 				r += spaces(online.length());
 			}
@@ -129,5 +129,9 @@ public class SpringAccount {
 
 	public String toString() {
 		return "SpringAccount [username=" + username + "]";
+	}
+
+	public String getDisplay() {
+		return username;
 	}
 }

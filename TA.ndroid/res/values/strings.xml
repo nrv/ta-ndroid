@@ -21,6 +21,8 @@
 -->
 <resources>
 	<string name="app_name">TA.ndroid</string>
+	<string name="app_options">TA.ndroid - options</string>
+	<string name="app_management">TA.ndroid - friends management</string>
 	<string name="empty_list"></string>
 	<string name="login">Login</string>
 	<string name="logout">Logout</string>
@@ -50,5 +52,8 @@
 	<string name="options_about_desc">About TA.ndroid</string>
 	<string name="options_about_info">&lt;b>Version:&lt;/b> %s&lt;br>&lt;b></string>
 	<string name="copyright">© 2010 NRV</string>
-	<string name="close">OK</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Cancel</string>
+	<string name="mng_add_clan">Add a clan</string>
+	<string name="mng_add_friend">Add a friend</string>
 </resources>

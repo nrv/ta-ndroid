@@ -19,21 +19,22 @@
 
 package com.springrts.tandroid.layers;
 
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import android.content.SharedPreferences;
 
 import com.springrts.data.SpringAccountList;
+import com.springrts.data.UsernamePatternList;
 import com.springrts.platform.CommonPersistenceLayer;
 import com.springrts.platform.PlatformLayer;
 import com.springrts.protocol.ConnectionContext;
 import com.springrts.protocol.ProtocolException;
 
 /**
+ * Ugly implementation, will be improved later
+ * 
  * @author NRV - nherve75@gmail.com
  * @version 1.0.0
  */
+// TODO Better stuff
 public class AndroidPersistenceLayerImpl extends CommonPersistenceLayer {
 	private SharedPreferences settings;
 	public static final String K_FRIENDS = "TA.ndroid-friends";
@@ -49,8 +50,8 @@ public class AndroidPersistenceLayerImpl extends CommonPersistenceLayer {
 	public SpringAccountList loadFriends() throws ProtocolException {
 		try {
 			return friendListFromString(settings.getString(K_FRIENDS, ""));
-		} catch (NumberFormatException e) {
-			throw new ProtocolException(e);
+		} catch (Exception e) {
+			throw new ProtocolException("loadFriends - " + e.getClass().getName() + " - " + e.getMessage());
 		}
 	}
 
@@ -63,7 +64,11 @@ public class AndroidPersistenceLayerImpl extends CommonPersistenceLayer {
 
 	@Override
 	public ConnectionContext loadConnectionContext() throws ProtocolException {
-		return contextFromString(settings.getString(K_CONTEXT, ""));
+		try {
+			return contextFromString(settings.getString(K_CONTEXT, ""));
+		} catch (Exception e) {
+			throw new ProtocolException("loadConnectionContext - " + e.getClass().getName() + " - " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -74,14 +79,39 @@ public class AndroidPersistenceLayerImpl extends CommonPersistenceLayer {
 	}
 
 	@Override
-	public Map<String, Pattern> loadUsernamePatterns() throws ProtocolException {
-		return usernamePatternsFromString(settings.getString(K_PATTERNS, ""));
+	public UsernamePatternList loadUsernamePatterns() throws ProtocolException {
+		try {
+			return usernamePatternsFromString(settings.getString(K_PATTERNS, ""));
+		} catch (Exception e) {
+			throw new ProtocolException("loadUsernamePatterns - " + e.getClass().getName() + " - " + e.getMessage());
+		}
 	}
 
 	@Override
-	public void saveUsernamePatterns(Map<String, Pattern> p) throws ProtocolException {
+	public void saveUsernamePatterns(UsernamePatternList p) throws ProtocolException {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(K_PATTERNS, usernamePatternsAsString(p));
+		editor.commit();
+	}
+
+	@Override
+	public void clearConnectionContext() throws ProtocolException {
+		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(K_CONTEXT);
+		editor.commit();
+	}
+
+	@Override
+	public void clearFriends() throws ProtocolException {
+		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(K_FRIENDS);
+		editor.commit();
+	}
+
+	@Override
+	public void clearUsernamePatterns() throws ProtocolException {
+		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(K_PATTERNS);
 		editor.commit();
 	}
 }

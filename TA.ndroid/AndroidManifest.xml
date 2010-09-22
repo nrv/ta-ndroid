@@ -26,15 +26,15 @@
 	android:versionName="1.0.0">
 	<application android:icon="@drawable/icon" android:label="@string/app_name" android:name="TAndroid">
 
-		<activity android:name=".ui.Main" android:launchMode="singleInstance">
+		<activity android:name=".ui.Main" android:label="@string/app_name" android:launchMode="singleInstance">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"></action>
 				<category android:name="android.intent.category.LAUNCHER"></category>
 			</intent-filter>
 		</activity>
 
-	<activity android:name=".ui.Options"></activity>
-	<activity android:name=".ui.ManageFriends"></activity>
+	<activity android:name=".ui.Options" android:label="@string/app_options"></activity>
+	<activity android:name=".ui.ManageFriends" android:label="@string/app_management"></activity>
 	<service android:name=".service.LobbyService"></service>
 </application>
 

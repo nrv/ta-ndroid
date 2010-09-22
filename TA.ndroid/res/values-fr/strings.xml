@@ -21,6 +21,8 @@
 -->
 <resources>
 	<string name="app_name">TA.ndroid</string>
+	<string name="app_options">TA.ndroid - options</string>
+	<string name="app_management">TA.ndroid - gestion des amis</string>
 	<string name="empty_list"></string>
 	<string name="login">Connexion</string>
 	<string name="logout">Déconnexion</string>
@@ -39,4 +41,19 @@
 	<string name="min">m</string>
 	<string name="hour">h</string>
 	<string name="day">j</string>
+	<string name="options_about">A propos</string>
+	<string name="options_about_cnx">Connection au lobby</string>
+	<string name="options_about_cnx_login">login</string>
+	<string name="options_about_cnx_password">mot de passe</string>
+	<string name="options_about_cnx_server">serveur</string>
+	<string name="options_about_cnx_default_server">taspringmaster.clan-sy.com</string>
+	<string name="options_about_cnx_server_port">port</string>
+	<string name="options_about_cnx_default_server_port">8200</string>
+	<string name="options_about_desc">A propos de TA.ndroid</string>
+	<string name="options_about_info">&lt;b>Version:&lt;/b> %s&lt;br>&lt;b></string>
+	<string name="copyright">© 2010 NRV</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Annuler</string>
+	<string name="mng_add_clan">Ajouter un clan</string>
+	<string name="mng_add_friend">Ajouter un ami</string>
 </resources>
