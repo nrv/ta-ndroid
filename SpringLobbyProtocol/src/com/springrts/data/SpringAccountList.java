@@ -50,7 +50,7 @@ public class SpringAccountList implements Iterable<SpringAccount> {
 	}
 
 	public boolean contains(String u) {
-		return accounts.containsKey(u);
+		return accounts.containsKey(u.toUpperCase());
 	}
 
 	public SpringAccount get(String u) {
@@ -63,13 +63,13 @@ public class SpringAccountList implements Iterable<SpringAccount> {
 
 	public void put(SpringAccount a) {
 		synchronized (accounts) {
-			accounts.put(a.getUsername(), a);
+			accounts.put(a.getUsername().toUpperCase(), a);
 		}
 	}
 
 	public void remove(String u) {
 		synchronized (accounts) {
-			accounts.remove(u);
+			accounts.remove(u.toUpperCase());
 		}
 	}
 

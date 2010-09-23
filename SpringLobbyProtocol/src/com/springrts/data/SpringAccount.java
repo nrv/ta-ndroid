@@ -38,7 +38,7 @@ public class SpringAccount {
 	
 	public SpringAccount(String username) {
 		this();
-		this.username = username;
+		setUsername(username);
 	}
 	
 	public int getInternalId() {
@@ -51,7 +51,7 @@ public class SpringAccount {
 		return username;
 	}
 	public void setUsername(String username) {
-		this.username = username;
+		this.username = username.toUpperCase();
 	}
 	public long getLastTimeSeen() {
 		return lastTimeSeen;
@@ -129,9 +129,5 @@ public class SpringAccount {
 
 	public String toString() {
 		return "SpringAccount [username=" + username + "]";
-	}
-
-	public String getDisplay() {
-		return username;
 	}
 }

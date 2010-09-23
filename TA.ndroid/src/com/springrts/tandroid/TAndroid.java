@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import android.app.Application;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.springrts.client.MonitoringApplication;
 import com.springrts.data.SpringAccount;
@@ -127,11 +128,15 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 	@Override
 	public void notifyFriendConnected(SpringAccount act) {
 		sendMessageToMainUI(HANDLER_NOTIFY_FRIEND_CONNECTED, act.getUsername());
+		String st = act.getUsername() + " " + getResources().getText(R.string.fr_connected);
+		Toast.makeText(this, st, Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void notifyFriendDisconnected(SpringAccount act) {
 		sendMessageToMainUI(HANDLER_NOTIFY_FRIEND_DISCONNECTED, act.getUsername());
+		String st = act.getUsername() + " " + getResources().getText(R.string.fr_disconnected);
+		Toast.makeText(this, st, Toast.LENGTH_LONG).show();
 	}
 
 	@Override

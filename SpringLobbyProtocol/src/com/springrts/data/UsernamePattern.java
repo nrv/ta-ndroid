@@ -36,9 +36,9 @@ public class UsernamePattern {
 	
 	public UsernamePattern(String patternString, String displayString) {
 		super();
-		this.asString = patternString;
-		this.displayString = displayString;
-		this.asPattern = Pattern.compile(asString, Pattern.CASE_INSENSITIVE);
+		this.asString = patternString.toUpperCase();
+		this.displayString = displayString.toUpperCase();
+		this.asPattern = Pattern.compile(this.asString, Pattern.CASE_INSENSITIVE);
 	}
 
 	public String getDisplay() {

@@ -164,14 +164,6 @@ public class Main extends TAndroidListActivity {
 					setStatus(action, info);
 					Toast.makeText(mainUI, info, Toast.LENGTH_LONG).show();
 					break;
-				case TAndroid.HANDLER_NOTIFY_FRIEND_CONNECTED:
-					String st = info + " " + getResources().getText(R.string.fr_connected);
-					Toast.makeText(mainUI, st, Toast.LENGTH_LONG).show();
-					break;
-				case TAndroid.HANDLER_NOTIFY_FRIEND_DISCONNECTED:
-					String st2 = info + " " + getResources().getText(R.string.fr_disconnected);
-					Toast.makeText(mainUI, st2, Toast.LENGTH_LONG).show();
-					break;
 				}
 
 			}

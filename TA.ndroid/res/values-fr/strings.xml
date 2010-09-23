@@ -22,7 +22,7 @@
 <resources>
 	<string name="app_name">TA.ndroid</string>
 	<string name="app_options">TA.ndroid - options</string>
-	<string name="app_management">TA.ndroid - gestion des amis</string>
+	<string name="app_management">TA.ndroid - gestion des contacts</string>
 	<string name="empty_list"></string>
 	<string name="login">Connexion</string>
 	<string name="logout">Déconnexion</string>
@@ -51,9 +51,12 @@
 	<string name="options_about_cnx_default_server_port">8200</string>
 	<string name="options_about_desc">A propos de TA.ndroid</string>
 	<string name="options_about_info">&lt;b>Version:&lt;/b> %s&lt;br>&lt;b></string>
-	<string name="copyright">© 2010 NRV</string>
+	<string name="copyright">© 2010 [FLM]NRV</string>
 	<string name="ok">OK</string>
 	<string name="cancel">Annuler</string>
 	<string name="mng_add_clan">Ajouter un clan</string>
-	<string name="mng_add_friend">Ajouter un ami</string>
+	<string name="mng_add_friend">Ajouter un contact</string>
+	<string name="mng_clear">Tout effacer</string>
+	<string name="mng_clear_question">Effacer tout vos contacts et clans ?</string>
+	<string name="delete">Supprimer</string>
 </resources>

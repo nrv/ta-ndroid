@@ -46,11 +46,11 @@ public class UsernamePatternList implements Iterable<UsernamePattern> {
 	}
 
 	public boolean contains(String u) {
-		return patterns.containsKey(u);
+		return patterns.containsKey(u.toUpperCase());
 	}
 
 	public UsernamePattern get(String u) {
-		return patterns.get(u);
+		return patterns.get(u.toUpperCase());
 	}
 
 	public boolean isEmpty() {
@@ -59,13 +59,13 @@ public class UsernamePatternList implements Iterable<UsernamePattern> {
 
 	public void put(UsernamePattern a) {
 		synchronized (patterns) {
-			patterns.put(a.getDisplay(), a);
+			patterns.put(a.getDisplay().toUpperCase(), a);
 		}
 	}
 
 	public void remove(String u) {
 		synchronized (patterns) {
-			patterns.remove(u);
+			patterns.remove(u.toUpperCase());
 		}
 	}
 

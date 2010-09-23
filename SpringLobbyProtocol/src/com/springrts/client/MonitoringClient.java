@@ -51,42 +51,105 @@ public class MonitoringClient extends PingClient {
 		this.application = application;
 	}
 
-	public void addClanToMonitor(String c) {
-		c = c.trim().toUpperCase();
-		String pt = ".*\\[" + c + "\\].*";
-		String dp = "*[" + c + "]*";
-		if (!usernamePatterns.contains(dp)) {
-			addUsernamePattern(pt, dp);
-		}
-
+	public void addClanToMonitor(String clan) {
+		clan = clan.trim().toUpperCase();
+		addUsernamePattern(".*[" + clan + "].*", "*[" + clan + "]*");
 	}
 
 	public void addFriendToMonitor(String username) {
 		username = username.trim().toUpperCase();
-		if (!persistentFriends.contains(username) && !username.equalsIgnoreCase(remote.getContext().getLogin())) {
-			SpringAccount friend = new SpringAccount(username);
-			persistentFriends.put(friend);
-			addUsernamePattern("^" + username + "$", username);
-			if (connectedPlayers.contains(username)) {
-				friendOnline(username);
-			}
+		addUsernamePattern("^" + username + "$", username);
+	}
 
-			try {
-				saveFriends();
-			} catch (ProtocolException e) {
-				hardware.err(e);
+	private void addPersistentFriend(String username) {
+		SpringAccount friend = new SpringAccount(username);
+		persistentFriends.put(friend);
+		if (connectedPlayers.contains(username)) {
+			friend.setCurrentlyOnline(true);
+		}
+	}
+
+	private void checkConnectedPlayersAgainstUsernamePatterns() {
+		boolean atLeastOneModification = false;
+
+		// Add new friends
+		for (SpringAccount a : connectedPlayers) {
+			String username = a.getUsername();
+			if (!persistentFriends.contains(username) && !username.equalsIgnoreCase(remote.getContext().getLogin())) {
+				for (UsernamePattern p : usernamePatterns) {
+					if (p.matches(username)) {
+						addPersistentFriend(username);
+						addFriendToMonitor(username);
+						atLeastOneModification = true;
+						break;
+					}
+				}
 			}
+		}
+
+		// Remove players without any corresponding pattern
+		List<String> toRemove = new ArrayList<String>();
+		for (SpringAccount a : persistentFriends) {
+			String username = a.getUsername();
+			boolean found = false;
+			for (UsernamePattern p : usernamePatterns) {
+				if (p.matches(username)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				toRemove.add(username);
+				atLeastOneModification = true;
+			}
+		}
+		for (String username : toRemove) {
+			persistentFriends.remove(username);
+		}
+
+		try {
+			if (atLeastOneModification) {
+				saveFriends();
+				nbFriendsOnline = 0;
+				for (SpringAccount a : persistentFriends) {
+					if (a.isCurrentlyOnline()) {
+						nbFriendsOnline++;
+					}
+				}
+				application.notifyFriendsOnlineChanged();
+			}
+		} catch (ProtocolException e) {
+			hardware.err(e);
 		}
 	}
 
 	private void addUsernamePattern(String p, String d) {
+		p = p.replace("[", "\\[");
+		p = p.replace("]", "\\]");
 		UsernamePattern pt = new UsernamePattern(p, d);
-		usernamePatterns.put(pt);
+		if (!usernamePatterns.contains(pt.getDisplay())) {
+			usernamePatterns.put(pt);
+
+			try {
+				saveUsernamePatterns();
+			} catch (ProtocolException e) {
+				hardware.err(e);
+			}
+
+			checkConnectedPlayersAgainstUsernamePatterns();
+		}
+	}
+
+	public void removeUsernamePatternFromMonitoring(String p) {
+		usernamePatterns.remove(p);
+
 		try {
 			saveUsernamePatterns();
 		} catch (ProtocolException e) {
 			hardware.err(e);
 		}
+
+		checkConnectedPlayersAgainstUsernamePatterns();
 	}
 
 	public void clearParameters() throws ProtocolException {
@@ -113,6 +176,26 @@ public class MonitoringClient extends PingClient {
 			}
 			throw new ProtocolException(msg);
 		}
+	}
+
+	public void clearFriends() throws ProtocolException {
+		usernamePatterns.clear();
+		persistentFriends.clear();
+
+		try {
+			saveUsernamePatterns();
+		} catch (ProtocolException e) {
+			hardware.err(e);
+		}
+
+		try {
+			saveFriends();
+		} catch (ProtocolException e) {
+			hardware.err(e);
+		}
+
+		nbFriendsOnline = 0;
+		application.notifyFriendsOnlineChanged();
 	}
 
 	private void friendOffline(String username) {
@@ -236,17 +319,24 @@ public class MonitoringClient extends PingClient {
 
 	public void pcAddUser(String username, String country, String cpu, String accountId) {
 		username = username.trim().toUpperCase();
+		if (username.equalsIgnoreCase("[PiRO]Carpenter")) {
+			System.out.println("--------------------------");
+		}
 		if (!username.equalsIgnoreCase(remote.getContext().getLogin())) {
 			synchronized (connectedPlayers) {
 				connectedPlayers.put(new SpringAccount(username));
 				if (!persistentFriends.contains(username)) {
 					for (UsernamePattern p : usernamePatterns) {
 						if (p.matches(username)) {
+							hardware.dbg("pcAddUser(" + username + ")");
+							addPersistentFriend(username);
 							addFriendToMonitor(username);
 							break;
 						}
 					}
-				} else {
+				}
+
+				if (persistentFriends.contains(username)) {
 					friendOnline(username);
 				}
 			}
@@ -325,32 +415,6 @@ public class MonitoringClient extends PingClient {
 
 	public void pcUpdateBattleInfo(String battleId, String spectatorCount, String locked, String mapHash, String mapName) {
 		// Ignore
-	}
-
-	public void removeFriend(String username) {
-		username = username.trim().toUpperCase();
-		if (connectedPlayers.contains(username)) {
-			friendOffline(username);
-		}
-		persistentFriends.remove(username);
-
-		removeUsernamePatternFromMonitoring(username);
-
-		try {
-			saveFriends();
-		} catch (ProtocolException e) {
-			hardware.err(e);
-		}
-	}
-
-	public void removeUsernamePatternFromMonitoring(String p) {
-		usernamePatterns.remove(p);
-
-		try {
-			saveUsernamePatterns();
-		} catch (ProtocolException e) {
-			hardware.err(e);
-		}
 	}
 
 	public void saveConnectionContext() throws ProtocolException {

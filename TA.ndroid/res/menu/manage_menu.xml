@@ -22,4 +22,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/addfriend" android:title="@string/mng_add_friend" />
 	<item android:id="@+id/addclan" android:title="@string/mng_add_clan" />
+	<item android:id="@+id/clearfriends" android:title="@string/mng_clear" />
 </menu>
