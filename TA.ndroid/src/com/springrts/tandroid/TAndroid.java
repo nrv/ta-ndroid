@@ -22,6 +22,9 @@ import java.security.DigestException;
 import java.security.NoSuchAlgorithmException;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
@@ -205,5 +208,4 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 	public void threadCreationSpecificStuff() {
 		Looper.prepare();
 	}
-
 }

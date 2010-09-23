@@ -222,4 +222,8 @@ public abstract class CommonNetworkLayer implements NetworkLayer {
 	public void setCommandListener(LobbyCommandListener client) {
 		this.client = client;
 	}
+
+	public void join(String chan) throws ProtocolException {
+		send("JOIN " + chan);
+	}
 }

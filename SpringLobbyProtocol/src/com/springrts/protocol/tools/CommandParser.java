@@ -124,6 +124,10 @@ public class CommandParser {
 			client.pcServerMessage(cxx);
 		} else if (c0.equals("REDIRECT")) {
 			client.pcRedirect(c[1]);
+		} else if (c0.equals("JOIN")) {
+			client.pcJoin(c[1]);
+		} else if (c0.equals("JOINFAILED")) {
+			client.pcJoinFailed(cxx);
 		} else {
 			client.pcNotImplemented(command);
 		}

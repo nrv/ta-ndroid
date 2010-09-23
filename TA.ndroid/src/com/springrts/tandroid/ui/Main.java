@@ -161,7 +161,7 @@ public class Main extends TAndroidListActivity {
 					setStatus(lobby.getCurrentStatus(), lobby.getAdditionnalInformation());
 					break;
 				case TAndroid.HANDLER_NOTIFY_DENIED:
-					setStatus(action, info);
+					setStatus(R.string.st_denied, info);
 					Toast.makeText(mainUI, info, Toast.LENGTH_LONG).show();
 					break;
 				}

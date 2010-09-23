@@ -278,6 +278,11 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		currentStatus = R.string.st_online;
 		additionnalInformation = null;
 		getTAndroid().notifyLoginEnd();
+		try {
+			client.join("tandroid");
+		} catch (ProtocolException e) {
+			err(e);
+		}
 	}
 
 	@Override

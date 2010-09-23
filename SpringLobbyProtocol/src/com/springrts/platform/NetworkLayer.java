@@ -36,6 +36,7 @@ public interface NetworkLayer {
 	public boolean isRunning();
 	public void login() throws ProtocolException;
 	public void ping() throws ProtocolException;
+	public void join(String chan) throws ProtocolException;
 	public void register() throws ProtocolException;
 	public void setCommandListener(LobbyCommandListener commandListener);
 	public void setContext(ConnectionContext context);

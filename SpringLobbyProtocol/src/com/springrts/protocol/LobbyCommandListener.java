@@ -49,4 +49,6 @@ public interface LobbyCommandListener extends Client {
 	void pcServerMessage(String msg);
 	void pcServerMessageBox(String msg);
 	void pcRedirect(String ip);
+	void pcJoin(String chan);
+	void pcJoinFailed(String chanAndReason);
 }

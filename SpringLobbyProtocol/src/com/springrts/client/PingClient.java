@@ -141,13 +141,11 @@ public abstract class PingClient implements LobbyCommandListener {
 	}
 
 	public void pcAccepted(String username) {
-		hardware.log("Login accepted");
 		connected = true;
 		tryingToConnect = false;
 	}
 
 	public void pcDenied(String reason) {
-		hardware.log("Access denied (" + reason + ")");
 		connected = false;
 		tryingToConnect = false;
 	}
@@ -160,7 +158,6 @@ public abstract class PingClient implements LobbyCommandListener {
 	}
 
 	public void pcTasServer(String serverVersion, String springVersion, String udpPort, String serverMode) {
-		hardware.log("Connected to a " + serverVersion + " instance accepting Spring " + springVersion);
 		try {
 			remote.login();
 		} catch (ProtocolException e) {
@@ -198,5 +195,9 @@ public abstract class PingClient implements LobbyCommandListener {
 
 	public ConnectionContext getContext() {
 		return remote.getContext();
+	}
+
+	public void join(String chan) throws ProtocolException {
+		remote.join(chan);
 	}
 }

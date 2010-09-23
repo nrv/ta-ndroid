@@ -76,13 +76,17 @@ public class MonitoringClient extends PingClient {
 		for (SpringAccount a : connectedPlayers) {
 			String username = a.getUsername();
 			if (!persistentFriends.contains(username) && !username.equalsIgnoreCase(remote.getContext().getLogin())) {
+				List<String> toAdd = new ArrayList<String>();
 				for (UsernamePattern p : usernamePatterns) {
 					if (p.matches(username)) {
 						addPersistentFriend(username);
-						addFriendToMonitor(username);
+						toAdd.add(username);
 						atLeastOneModification = true;
 						break;
 					}
+				}
+				for (String u : toAdd) {
+					addFriendToMonitor(u);
 				}
 			}
 		}
@@ -461,6 +465,14 @@ public class MonitoringClient extends PingClient {
 
 	public void setUsernamePatterns(UsernamePatternList usernamePatterns) {
 		this.usernamePatterns = usernamePatterns;
+	}
+
+	public void pcJoin(String chan) {
+		// Ignore
+	}
+
+	public void pcJoinFailed(String chanAndReason) {
+		// Ignore
 	}
 
 }
