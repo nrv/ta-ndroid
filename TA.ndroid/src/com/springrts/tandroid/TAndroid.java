@@ -22,9 +22,6 @@ import java.security.DigestException;
 import java.security.NoSuchAlgorithmException;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
@@ -54,8 +51,8 @@ public class TAndroid extends Application implements MonitoringApplication, Plat
 	public static final int HANDLER_NOTIFY_FRIEND_CONNECTED = 7;
 	public static final int HANDLER_NOTIFY_FRIEND_DISCONNECTED = 8;
 	
-	private static final boolean DEBUG_LEVEL_ENABLED = true;
-	private static final boolean LOG_LEVEL_ENABLED = true;
+	private static final boolean DEBUG_LEVEL_ENABLED = false;
+	private static final boolean LOG_LEVEL_ENABLED = false;
 
 	private Main friendsListDisplayed = null;
 	private CommandParser parser;

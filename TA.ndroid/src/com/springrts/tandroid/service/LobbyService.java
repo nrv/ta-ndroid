@@ -304,9 +304,9 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		additionnalInformation = null;
 	}
 
-	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		return Service.START_STICKY;
+		// return START_STICKY;
+		return 1;
 	}
 
 	private void updateNotification(int nb, CharSequence tickerText, CharSequence contentText, boolean force) {
