@@ -50,6 +50,7 @@ public class Main extends TAndroidListActivity {
 	public static final String HANDLER_ACTION = "a";
 	public static final String HANDLER_INFO = "i";
 	public static final int UI_REFRESH_INTERVAL = 15;
+	public static final int ACTIVE_FRIENDS_SINCE = 7 * 24 * 60;
 
 	private Handler handler;
 	private UIRefresher refresher;
@@ -66,8 +67,8 @@ public class Main extends TAndroidListActivity {
 			int refreshInterval = UI_REFRESH_INTERVAL * 1000;
 			while (doRefresh) {
 				try {
-					wait(refreshInterval);
 					refresh();
+					wait(refreshInterval);
 				} catch (InterruptedException e) {
 				}
 			}
@@ -85,26 +86,23 @@ public class Main extends TAndroidListActivity {
 
 	private void exit() {
 		logout();
-		if (refresher != null) {
-			refresher.stopRefresher();
-			refresher = null;
-		}
-		
+		stopRefresher();
 		stopService(new Intent(this, LobbyService.class));
-		
+
 		finish();
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		startService(new Intent(this, LobbyService.class));
 
 		refresher = null;
 
 		class MyArrayAdapter extends ArrayAdapter<SpringAccount> {
 			private int textViewResourceId;
+
 			public MyArrayAdapter(Context context, int textViewResourceId, List<SpringAccount> objects) {
 				super(context, textViewResourceId, objects);
 				this.textViewResourceId = textViewResourceId;
@@ -147,12 +145,14 @@ public class Main extends TAndroidListActivity {
 
 				switch (action) {
 				case TAndroid.HANDLER_REFRESH_UI:
-					List<SpringAccount> aa = new ArrayList<SpringAccount>();
-					for (SpringAccount act : lobby.getActiveFriendsSince(15)) {
-						aa.add(act);
+					if (lobby != null) {
+						List<SpringAccount> aa = new ArrayList<SpringAccount>();
+						for (SpringAccount act : lobby.getActiveFriendsSince(ACTIVE_FRIENDS_SINCE)) {
+							aa.add(act);
+						}
+						MyArrayAdapter adt = new MyArrayAdapter(mainUI, R.layout.friend_row, aa);
+						setListAdapter(adt);
 					}
-					MyArrayAdapter adt = new MyArrayAdapter(mainUI, R.layout.friend_row, aa);
-					setListAdapter(adt);
 					break;
 				case TAndroid.HANDLER_NOTIFY_LOGIN:
 				case TAndroid.HANDLER_NOTIFY_OFFLINE:
@@ -172,12 +172,12 @@ public class Main extends TAndroidListActivity {
 		handler = new MyHandler(this);
 
 		setContentView(R.layout.friends_list);
-		
-//		if (refresher != null) {
-//			refresher.stopRefresher();
-//		}
-//		refresher = new UIRefresher();
-//		refresher.start();
+
+		// if (refresher != null) {
+		// refresher.stopRefresher();
+		// }
+		// refresher = new UIRefresher();
+		// refresher.start();
 	}
 
 	@Override
@@ -198,9 +198,6 @@ public class Main extends TAndroidListActivity {
 			return true;
 		case R.id.exit:
 			exit();
-			return true;
-		case R.id.refresh:
-			refresh();
 			return true;
 		case R.id.options:
 			startActivity(new Intent(this, Options.class));
@@ -229,6 +226,7 @@ public class Main extends TAndroidListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		stopRefresher();
 		getTAndroid().unsetFriendsListDisplayed();
 	}
 
@@ -236,6 +234,19 @@ public class Main extends TAndroidListActivity {
 	protected void onResume() {
 		super.onResume();
 		getTAndroid().setFriendsListDisplayed(this);
+		startRefresher();
+	}
+
+	private void startRefresher() {
+		refresher = new UIRefresher();
+		refresher.start();
+	}
+
+	private void stopRefresher() {
+		if (refresher != null) {
+			refresher.stopRefresher();
+			refresher = null;
+		}
 	}
 
 	public void sendMessageToMainThread(int action, String info) {
@@ -254,7 +265,5 @@ public class Main extends TAndroidListActivity {
 		setStatus(lobby.getCurrentStatus(), lobby.getAdditionnalInformation());
 		refresh();
 	}
-
-
 
 }
