@@ -59,4 +59,5 @@
 	<string name="mng_clear">Clear all</string>
 	<string name="mng_clear_question">Clear all your contacts and clans ?</string>
 	<string name="delete">Delete</string>
+	<string name="connected_friends">contact(s) online</string>
 </resources>

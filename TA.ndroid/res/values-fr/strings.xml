@@ -59,4 +59,5 @@
 	<string name="mng_clear">Tout effacer</string>
 	<string name="mng_clear_question">Effacer tout vos contacts et clans ?</string>
 	<string name="delete">Supprimer</string>
+	<string name="connected_friends">contact(s) connecté(s)</string>
 </resources>

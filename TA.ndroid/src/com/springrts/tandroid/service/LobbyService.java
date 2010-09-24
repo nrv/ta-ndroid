@@ -60,8 +60,8 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 	private static final int NOTIFICATION_ID = 1;
 
 	private MonitoringClient client;
-	private NotificationManager notificationManager;
-	private Notification notification;
+	// private NotificationManager notificationManager;
+	// private Notification notification;
 
 	private final IBinder mBinder = new LocalBinder();
 
@@ -78,7 +78,7 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 
 	private void cancelNotification() {
 		// if (notification != null) {
-		// dbg("LobbyService.notifyDisconnected() will try to cancel notification");
+		dbg("LobbyService.notifyDisconnected() will try to cancel notification");
 		//
 		// CharSequence contentTitle =
 		// getResources().getText(R.string.app_name);
@@ -93,31 +93,16 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		// notification.flags = Notification.DEFAULT_ALL;
 		//
 		// updateNotification(0, true);
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.cancel(NOTIFICATION_ID);
 		// TODO en cours
 		// }
 	}
 
 	private void createNotification() {
-		int icon = R.drawable.notification;
-		CharSequence tickerText = getResources().getText(R.string.st_online);
-		long when = System.currentTimeMillis();
-		notification = new Notification(icon, tickerText, when);
-		// notification.flags = Notification.DEFAULT_ALL |
-		// Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
-		// notification.flags = Notification.DEFAULT_ALL |
-		// Notification.FLAG_ONGOING_EVENT;
-
-		CharSequence contentTitle = getResources().getText(R.string.app_name);
-		CharSequence contentText = getResources().getText(R.string.st_online);
-		Intent notificationIntent = new Intent(this, Main.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-		notification.setLatestEventInfo(this, contentTitle, contentText, contentIntent);
-
 		// Need to do this way to have numbers activated on this notification
-		updateNotification(1, true);
-		updateNotification(0, true);
+		updateNotification(1, null, null, true);
+		updateNotification(0, getResources().getText(R.string.st_online), getResources().getText(R.string.st_online), true);
 	}
 
 	@Override
@@ -262,7 +247,8 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 	public void notifyFriendsOnlineChanged() {
 		if (client.isLoginFinished()) {
 			getTAndroid().notifyFriendsOnlineChanged();
-			updateNotification(getNbFriendsOnline(), false);
+			
+			updateNotification(getNbFriendsOnline(), null, getNbFriendsOnline() + " " + getResources().getText(R.string.connected_friends), false);
 		}
 	}
 
@@ -312,8 +298,7 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 
 		client.setStartPinger(true);
 
-		notification = null;
-		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
 
 		currentStatus = R.string.st_offline;
 		additionnalInformation = null;
@@ -324,10 +309,22 @@ public class LobbyService extends Service implements MonitoringApplication, LogL
 		return Service.START_STICKY;
 	}
 
-	private void updateNotification(int nb, boolean force) {
+	private void updateNotification(int nb, CharSequence tickerText, CharSequence contentText, boolean force) {
 		if (isConnectedAndRunning() || force) {
+			int icon = R.drawable.notification;
+			long when = System.currentTimeMillis();
+			Notification notification = new Notification(icon, tickerText, when);
+			notification.flags = Notification.FLAG_NO_CLEAR;
+
+			CharSequence contentTitle = getResources().getText(R.string.app_name);
+			Intent notificationIntent = new Intent(this, Main.class);
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+			notification.setLatestEventInfo(this, contentTitle, contentText, contentIntent);
+			
 			notification.number = nb;
 			notification.vibrate = new long[] { 100, 250 };
+			NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			notificationManager.notify(NOTIFICATION_ID, notification);
 		}
 	}
